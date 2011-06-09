@@ -11,7 +11,7 @@ public class Main {
 	 * @throws Exception 
 	 */
 	public static void main(String[] args) throws Exception {
-		byte[] b = new byte[1024];
+		byte[] b = new byte[1024 * 32];
 		FileInputStream in = new FileInputStream(args[0]);
 		int len = in.read(b);
 		in.close();

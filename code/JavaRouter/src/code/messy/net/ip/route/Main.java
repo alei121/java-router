@@ -41,7 +41,7 @@ public class Main {
         
         IcmpHandler icmp = new IcmpHandler();
         IpProtocolHandler ip = new IpProtocolHandler();
-        ip.add(IpPacket.Protocol.ICMP, icmp);
+        ip.subscribe(IpPacket.Protocol.ICMP, icmp);
 
         
         

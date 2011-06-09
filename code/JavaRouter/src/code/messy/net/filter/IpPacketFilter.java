@@ -5,17 +5,17 @@ package code.messy.net.filter;
 
 import java.net.InetAddress;
 
+import code.messy.Handler;
 import code.messy.net.ip.IpPacket;
-import code.messy.net.ip.IpPacketHandler;
 
-public class IpPacketFilter implements IpPacketHandler {
+public class IpPacketFilter implements Handler<IpPacket> {
 
-    IpPacketHandler match;
-    IpPacketHandler unmatch;
+	Handler<IpPacket> match;
+	Handler<IpPacket> unmatch;
     InetAddress address;
 
-    public IpPacketFilter(InetAddress address, IpPacketHandler matchHandler,
-            IpPacketHandler unmatchHandler) {
+    public IpPacketFilter(InetAddress address, Handler<IpPacket> matchHandler,
+    		Handler<IpPacket> unmatchHandler) {
         this.address = address;
         this.match = matchHandler;
         this.unmatch = unmatchHandler;

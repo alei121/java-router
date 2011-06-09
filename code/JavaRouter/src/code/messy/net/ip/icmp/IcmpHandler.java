@@ -7,13 +7,13 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
+import code.messy.Handler;
 import code.messy.net.Dump;
 import code.messy.net.ip.IpHeader;
 import code.messy.net.ip.IpPacket;
-import code.messy.net.ip.IpPacketHandler;
 import code.messy.net.ip.route.DirectSubnet;
 
-public class IcmpHandler implements IpPacketHandler {
+public class IcmpHandler implements Handler<IpPacket> {
     @Override
     public void handle(IpPacket ip) {
         Dump.dumpIndent();

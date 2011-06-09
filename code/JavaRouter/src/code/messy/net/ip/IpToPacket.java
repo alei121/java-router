@@ -6,7 +6,7 @@ package code.messy.net.ip;
 import code.messy.Handler;
 import code.messy.net.Packet;
 
-public class IpToPacket implements IpPacketHandler {
+public class IpToPacket implements Handler<IpPacket> {
     Handler<Packet> ph;
 
     public IpToPacket(Handler<Packet> ph) {

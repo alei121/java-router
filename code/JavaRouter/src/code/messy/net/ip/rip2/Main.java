@@ -46,8 +46,8 @@ public class Main {
 
         IcmpHandler icmp = new IcmpHandler();
         IpProtocolHandler protocol = new IpProtocolHandler();
-        protocol.add(IpPacket.Protocol.ICMP, icmp);
-        protocol.add(IpPacket.Protocol.UDP, udp);
+        protocol.subscribe(IpPacket.Protocol.ICMP, icmp);
+        protocol.subscribe(IpPacket.Protocol.UDP, udp);
 
         RipProcessor rip = new RipProcessor(udp);
         

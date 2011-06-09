@@ -6,22 +6,22 @@ package code.messy.net.filter;
 import java.util.ArrayList;
 import java.util.List;
 
+import code.messy.Handler;
 import code.messy.net.ip.IpPacket;
-import code.messy.net.ip.IpPacketHandler;
 
-public class IpPacketRepeater implements IpPacketHandler {
-    List<IpPacketHandler> handlers = new ArrayList<IpPacketHandler>();
+public class IpPacketRepeater implements Handler<IpPacket> {
+    List<Handler<IpPacket>> handlers = new ArrayList<Handler<IpPacket>>();
 
     public IpPacketRepeater() {
     }
 
-    public void add(IpPacketHandler ph) {
+    public void add(Handler<IpPacket> ph) {
         handlers.add(ph);
     }
 
     @Override
     public void handle(IpPacket packet) {
-        for (IpPacketHandler handler : handlers) {
+        for (Handler<IpPacket> handler : handlers) {
             handler.handle(packet);
         }
     }

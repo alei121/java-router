@@ -34,6 +34,9 @@ public class EthernetPort extends Thread implements Port, IpLinkSupport, Publish
         return "[eth:" + socket + ":mac" + mac + "]";
     }
 
+    
+    // TODO remove this send(Packet)???
+    
     @Override
     public void send(Packet packet) throws IOException {
         ByteBuffer bb = packet.getByteBuffer();
@@ -81,6 +84,20 @@ public class EthernetPort extends Thread implements Port, IpLinkSupport, Publish
         Dump.dumpDedent();
     }
 
+    public void send(MacAddress dstMac, Ethertype type, ByteBuffer[] payload) throws IOException {
+        ByteBuffer header = ByteBuffer.allocateDirect(60);
+        header.put(dstMac.getAddress());
+        header.put(mac.getAddress());
+        header.putShort(type.getValue());
+        header.flip();
+        
+        ByteBuffer bbs[] = new ByteBuffer[payload.length + 1];
+        bbs[0] = header;
+        for (int i = 0; i < payload.length; i++) {
+            bbs[i + 1] = payload[i];
+        }
+        socket.write(bbs);
+    }
     
     // TODO new code using publisher and handler
     HashMap<Ethertype, Handler<Packet>> map = new HashMap<Ethertype, Handler<Packet>>();
@@ -116,5 +133,4 @@ public class EthernetPort extends Thread implements Port, IpLinkSupport, Publish
             e.printStackTrace();
         }
     }
-    
 }

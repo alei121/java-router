@@ -6,12 +6,12 @@ package code.messy.net.ip.udp;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
+import code.messy.Handler;
 import code.messy.net.Dump;
 import code.messy.net.ip.IpPacket;
-import code.messy.net.ip.IpPacketHandler;
 import code.messy.net.ip.TupleMap;
 
-public class UdpHandler implements IpPacketHandler {
+public class UdpHandler implements Handler<IpPacket> {
     static public void send(InetAddress dstAddress, int dstPort,
             ByteBuffer[] bbs) {
 

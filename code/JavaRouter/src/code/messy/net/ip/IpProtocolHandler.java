@@ -5,23 +5,31 @@ package code.messy.net.ip;
 
 import java.util.HashMap;
 
-public class IpProtocolHandler implements IpPacketHandler {
-    public IpProtocolHandler() {
-    }
+import code.messy.Handler;
+import code.messy.Publisher;
+import code.messy.net.ip.IpPacket.Protocol;
 
-    HashMap<Byte, IpPacketHandler> map = new HashMap<Byte, IpPacketHandler>();
-
-    public void add(IpPacket.Protocol protocol, IpPacketHandler ph) {
-        map.put(protocol.getValue(), ph);
-    }
+public class IpProtocolHandler implements Publisher<IpPacket.Protocol, Handler<IpPacket>>, Handler<IpPacket> {
+    HashMap<Byte, Handler<IpPacket>> map = new HashMap<Byte, Handler<IpPacket>>();
 
     @Override
     public void handle(IpPacket packet) {
         Byte protocol = packet.getProtocol();
-        IpPacketHandler ph = map.get(protocol);
+        Handler<IpPacket> ph = map.get(protocol);
         if (ph != null) {
             ph.handle(packet);
         }
     }
+
+	@Override
+	public void subscribe(Protocol type, Handler<IpPacket> handler) {
+        map.put(type.getValue(), handler);
+	}
+
+	@Override
+	public void subscribe(Handler<IpPacket> handler) {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

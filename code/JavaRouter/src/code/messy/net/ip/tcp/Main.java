@@ -41,8 +41,8 @@ public class Main {
         tcp.add(null, Integer.parseInt(args[6]), myTcp);
         
         IpProtocolHandler protocol = new IpProtocolHandler();
-        protocol.add(IpPacket.Protocol.ICMP, icmp);
-        protocol.add(IpPacket.Protocol.TCP, tcp);
+        protocol.subscribe(IpPacket.Protocol.ICMP, icmp);
+        protocol.subscribe(IpPacket.Protocol.TCP, tcp);
         PacketToIp pak2Ip = new PacketToIp(protocol);
 
         EthernetPort p = new EthernetPort(args[0]);

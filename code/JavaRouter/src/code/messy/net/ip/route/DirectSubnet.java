@@ -10,11 +10,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import code.messy.Handler;
 import code.messy.net.Dump;
 import code.messy.net.Packet;
 import code.messy.net.ip.IpLinkSupport;
 import code.messy.net.ip.IpPacket;
-import code.messy.net.ip.IpPacketHandler;
 import code.messy.net.ip.NetworkNumber;
 
 public class DirectSubnet implements Subnet {
@@ -24,13 +24,15 @@ public class DirectSubnet implements Subnet {
     NetworkNumber network;
     InetAddress src;
     IpLinkSupport link;
-    IpPacketHandler localHandler = null;
+    Handler<IpPacket> localHandler = null;
     List<RemoteSubnet> remotes = new ArrayList<RemoteSubnet>();
+
+
     
-    // TODO I don't like this localHandler thing!!!
-    // XXX a test
+    // TODO Use loopback() on port instead of localHandler
+    // TODO Not sure why protected
     protected DirectSubnet(NetworkNumber network, InetAddress src,
-            IpLinkSupport link, IpPacketHandler localHandler) {
+            IpLinkSupport link, Handler<IpPacket> localHandler) {
         this.network = network;
         this.src = src;
         this.link = link;
@@ -38,11 +40,18 @@ public class DirectSubnet implements Subnet {
     }
 
     static public DirectSubnet create(NetworkNumber network, InetAddress src,
-            IpLinkSupport link, IpPacketHandler localHandler) {
+            IpLinkSupport link, Handler<IpPacket> localHandler) {
         DirectSubnet subnet = new DirectSubnet(network, src, link, localHandler);
         directs.add(subnet);
         addressSubnetMap.put(src, subnet);
         return subnet;
+    }
+    
+    static public DirectSubnet create(InetAddress src, int prefix, IpLinkSupport link) {
+    	DirectSubnet subnet = new DirectSubnet(new NetworkNumber(src, prefix), src, link, null);
+    	directs.add(subnet);
+        addressSubnetMap.put(src, subnet);
+    	return subnet;
     }
     
     @Override

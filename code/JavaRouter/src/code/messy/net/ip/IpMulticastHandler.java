@@ -5,9 +5,11 @@ package code.messy.net.ip;
 
 import java.net.InetAddress;
 
-public class IpMulticastHandler implements IpPacketHandler {
-    IpPacketHandler multicast, other;
-    public IpMulticastHandler(IpPacketHandler multicast, IpPacketHandler other) {
+import code.messy.Handler;
+
+public class IpMulticastHandler implements Handler<IpPacket> {
+	Handler<IpPacket> multicast, other;
+    public IpMulticastHandler(Handler<IpPacket> multicast, Handler<IpPacket> other) {
         this.multicast = multicast;
         this.other = other;
     }

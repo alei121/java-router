@@ -7,9 +7,9 @@ import code.messy.Handler;
 import code.messy.net.Packet;
 
 public class PacketToIp implements Handler<Packet> {
-    IpPacketHandler ipHandler;
+    Handler<IpPacket> ipHandler;
 
-    public PacketToIp(IpPacketHandler ipHandler) {
+    public PacketToIp(Handler<IpPacket> ipHandler) {
         this.ipHandler = ipHandler;
     }
 

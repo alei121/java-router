@@ -6,10 +6,10 @@ package code.messy.net.ip.route;
 import java.io.IOException;
 import java.net.InetAddress;
 
+import code.messy.Handler;
 import code.messy.net.ip.IpPacket;
-import code.messy.net.ip.IpPacketHandler;
 
-public class RouteHandler implements IpPacketHandler {
+public class RouteHandler implements Handler<IpPacket> {
     @Override
     public void handle(IpPacket ip) {
         InetAddress dst = ip.getDestinationAddress();

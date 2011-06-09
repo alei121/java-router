@@ -8,5 +8,7 @@ import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
 public interface IpLinkSupport {
-    void send(InetAddress src, InetAddress dst, ByteBuffer[] payload) throws IOException;
+	// void loopback(ByteBuffer[] payload) throws IOException;
+//    void forward(InetAddress src, InetAddress gw, IpPacket packet) throws IOException;
+    void send(InetAddress src, InetAddress gw, ByteBuffer[] payload) throws IOException;
 }

@@ -15,7 +15,7 @@ import code.messy.net.bridge.BridgePacketHandler;
 import code.messy.net.ethernet.EthernetPort;
 import code.messy.net.ethernet.Ethertype;
 import code.messy.net.ip.IpLoggingHandler;
-import code.messy.net.ip.IpPacketHandler;
+import code.messy.net.ip.IpPacket;
 import code.messy.net.ip.IpToPacket;
 import code.messy.net.ip.PacketToIp;
 
@@ -43,7 +43,7 @@ public class Main {
             IpLoggingHandler my = new IpLoggingHandler();
             ipr.add(ip2pak);
             ipr.add(my);
-            IpPacketHandler ipf = new IpPacketFilter(address, ipr, ip2pak);
+            Handler<IpPacket> ipf = new IpPacketFilter(address, ipr, ip2pak);
             Handler<Packet> ph = new PacketToIp(ipf);
             port.subscribe(Ethertype.IP, ph);
             port.subscribe(bph);

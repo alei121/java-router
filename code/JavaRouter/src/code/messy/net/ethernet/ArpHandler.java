@@ -36,9 +36,6 @@ public class ArpHandler implements Handler<Packet> {
     static void request(InetAddress srcAddress, InetAddress dstAddress,
             EthernetPort port) throws IOException {
         ByteBuffer arp = ByteBuffer.allocateDirect(60);
-        arp.put(MacAddress.BROADCAST.getAddress());
-        arp.put(port.getMac().getAddress());
-        arp.putShort(Ethertype.ARP.getValue());
 
         // Ethernet
         arp.putShort((short) 0x1);
@@ -58,7 +55,9 @@ public class ArpHandler implements Handler<Packet> {
 
         arp.flip();
 
-        port.send(arp);
+        ByteBuffer bbs[] = new ByteBuffer[1];
+        bbs[0] = arp;
+        port.send(MacAddress.BROADCAST, Ethertype.ARP, bbs);
     }
 
     @Override
@@ -107,9 +106,6 @@ public class ArpHandler implements Handler<Packet> {
                 DirectSubnet subnet = DirectSubnet.getSubnet(targetAddress);
                 if (subnet != null && port == subnet.getLink()) {
                     ByteBuffer arp = ByteBuffer.allocateDirect(60);
-                    arp.put(senderMac.getAddress());
-                    arp.put(port.getMac().getAddress());
-                    arp.putShort(Ethertype.ARP.getValue());
 
                     // Ethernet
                     arp.putShort((short) 0x1);
@@ -131,7 +127,10 @@ public class ArpHandler implements Handler<Packet> {
 
                     Dump.dump("ArpHandler: response. ip=" + targetAddress
                             + " mac=" + port.getMac());
-                    port.send(arp);
+                    
+                    ByteBuffer bbs[] = new ByteBuffer[1];
+                    bbs[0] = arp;
+                    port.send(senderMac, Ethertype.ARP, bbs);
                 }
             } catch (UnknownHostException e) {
                 e.printStackTrace();

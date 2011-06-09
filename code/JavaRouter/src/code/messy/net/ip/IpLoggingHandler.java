@@ -3,7 +3,9 @@
  */
 package code.messy.net.ip;
 
-public class IpLoggingHandler implements IpPacketHandler {
+import code.messy.Handler;
+
+public class IpLoggingHandler implements Handler<IpPacket> {
     public IpLoggingHandler() {
     }
 

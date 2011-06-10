@@ -11,7 +11,7 @@ import code.messy.Handler;
 import code.messy.net.Dump;
 import code.messy.net.ip.IpHeader;
 import code.messy.net.ip.IpPacket;
-import code.messy.net.ip.route.DirectSubnet;
+import code.messy.net.ip.route.LocalSubnet;
 
 public class IcmpHandler implements Handler<IpPacket> {
     @Override
@@ -41,7 +41,7 @@ public class IcmpHandler implements Handler<IpPacket> {
         try {
             ByteBuffer icmp = ByteBuffer.allocateDirect(length);
             InetAddress dst = ip.getSourceAddress();
-            DirectSubnet subnet = DirectSubnet.getSubnet(ip.getDestinationAddress());
+            LocalSubnet subnet = LocalSubnet.getSubnet(ip.getDestinationAddress());
             
             // copy original
             bb.position(offset);

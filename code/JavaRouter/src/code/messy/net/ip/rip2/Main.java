@@ -18,7 +18,7 @@ import code.messy.net.ip.IpProtocolHandler;
 import code.messy.net.ip.NetworkNumber;
 import code.messy.net.ip.PacketToIp;
 import code.messy.net.ip.icmp.IcmpHandler;
-import code.messy.net.ip.route.DirectSubnet;
+import code.messy.net.ip.route.LocalSubnet;
 import code.messy.net.ip.route.RouteHandler;
 import code.messy.net.ip.route.RoutingTable;
 import code.messy.net.ip.udp.UdpHandler;
@@ -57,7 +57,7 @@ public class Main {
         short prefix = Short.parseShort(args[2]);
         ports.add(p);
         NetworkNumber network = new NetworkNumber(address, prefix);
-        DirectSubnet direct = DirectSubnet.create(network, address, p, protocol);
+        LocalSubnet direct = LocalSubnet.create(network, address, p, protocol);
         RoutingTable.getInstance().add(direct);
         rip.addStaticRoute(direct);
 
@@ -67,7 +67,7 @@ public class Main {
         prefix = Short.parseShort(args[5]);
         ports.add(p);
         network = new NetworkNumber(address, prefix);
-        direct = DirectSubnet.create(network, address, p, protocol);
+        direct = LocalSubnet.create(network, address, p, protocol);
         RoutingTable.getInstance().add(direct);
         rip.addStaticRoute(direct);
 

@@ -17,9 +17,9 @@ import code.messy.net.ip.IpLinkSupport;
 import code.messy.net.ip.IpPacket;
 import code.messy.net.ip.NetworkNumber;
 
-public class DirectSubnet implements Subnet {
-    static List<DirectSubnet> directs = new ArrayList<DirectSubnet>();
-    static HashMap<InetAddress, DirectSubnet> addressSubnetMap = new HashMap<InetAddress, DirectSubnet>();
+public class LocalSubnet implements Subnet {
+    static List<LocalSubnet> directs = new ArrayList<LocalSubnet>();
+    static HashMap<InetAddress, LocalSubnet> addressSubnetMap = new HashMap<InetAddress, LocalSubnet>();
     
     NetworkNumber network;
     InetAddress src;
@@ -31,7 +31,7 @@ public class DirectSubnet implements Subnet {
     
     // TODO Use loopback() on port instead of localHandler
     // TODO Not sure why protected
-    protected DirectSubnet(NetworkNumber network, InetAddress src,
+    protected LocalSubnet(NetworkNumber network, InetAddress src,
             IpLinkSupport link, Handler<IpPacket> localHandler) {
         this.network = network;
         this.src = src;
@@ -39,16 +39,16 @@ public class DirectSubnet implements Subnet {
         this.localHandler = localHandler;
     }
 
-    static public DirectSubnet create(NetworkNumber network, InetAddress src,
+    static public LocalSubnet create(NetworkNumber network, InetAddress src,
             IpLinkSupport link, Handler<IpPacket> localHandler) {
-        DirectSubnet subnet = new DirectSubnet(network, src, link, localHandler);
+        LocalSubnet subnet = new LocalSubnet(network, src, link, localHandler);
         directs.add(subnet);
         addressSubnetMap.put(src, subnet);
         return subnet;
     }
     
-    static public DirectSubnet create(InetAddress src, int prefix, IpLinkSupport link) {
-    	DirectSubnet subnet = new DirectSubnet(new NetworkNumber(src, prefix), src, link, null);
+    static public LocalSubnet create(InetAddress src, int prefix, IpLinkSupport link) {
+    	LocalSubnet subnet = new LocalSubnet(new NetworkNumber(src, prefix), src, link, null);
     	directs.add(subnet);
         addressSubnetMap.put(src, subnet);
     	return subnet;
@@ -113,7 +113,7 @@ public class DirectSubnet implements Subnet {
         remotes.add(remote);
     }
 
-    public static List<DirectSubnet> getSubnets() {
+    public static List<LocalSubnet> getSubnets() {
         return directs;
     }
 
@@ -126,7 +126,7 @@ public class DirectSubnet implements Subnet {
         return remotes;
     }
     
-    static public DirectSubnet getSubnet(InetAddress address) {
+    static public LocalSubnet getSubnet(InetAddress address) {
         return addressSubnetMap.get(address);
     }
 

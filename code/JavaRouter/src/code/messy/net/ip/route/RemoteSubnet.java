@@ -14,12 +14,12 @@ import code.messy.net.ip.NetworkNumber;
 public class RemoteSubnet implements Subnet {
     private NetworkNumber network;
     private InetAddress nextHop;
-    private DirectSubnet direct;
+    private LocalSubnet direct;
 
     public RemoteSubnet(NetworkNumber network, InetAddress nextHop) {
         this.network = network;
         this.nextHop = nextHop;
-        direct = (DirectSubnet) RoutingTable.getInstance()
+        direct = (LocalSubnet) RoutingTable.getInstance()
                 .getSubnetByMasking(nextHop);
         direct.add(this);
     }

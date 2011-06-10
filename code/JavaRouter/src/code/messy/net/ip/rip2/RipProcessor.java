@@ -17,7 +17,7 @@ import code.messy.net.Port;
 import code.messy.net.ip.IpHeader;
 import code.messy.net.ip.IpPacket;
 import code.messy.net.ip.UdpHeader;
-import code.messy.net.ip.route.DirectSubnet;
+import code.messy.net.ip.route.LocalSubnet;
 import code.messy.net.ip.udp.UdpHandler;
 
 /**
@@ -87,7 +87,7 @@ import code.messy.net.ip.udp.UdpHandler;
  */
 public class RipProcessor {
     Timer timer = new Timer();
-    List<DirectSubnet> ripSubnets = new ArrayList<DirectSubnet>();
+    List<LocalSubnet> ripSubnets = new ArrayList<LocalSubnet>();
     List<Loop> loops = new ArrayList<Loop>();
     InetAddress multicastAddress;
     RipTable ripTable = new RipTable();
@@ -102,7 +102,7 @@ public class RipProcessor {
         }
     }
 
-    public void addStaticRoute(DirectSubnet localSubnet) {
+    public void addStaticRoute(LocalSubnet localSubnet) {
         ripSubnets.add(localSubnet);
         Loop loop = new Loop(localSubnet);
         loops.add(loop);
@@ -122,10 +122,10 @@ public class RipProcessor {
     }
 
     class Loop extends TimerTask {
-        DirectSubnet direct;
+        LocalSubnet direct;
         ByteBuffer payload = ByteBuffer.allocateDirect(4 + 20 * 25);
 
-        public Loop(DirectSubnet direct) {
+        public Loop(LocalSubnet direct) {
             this.direct = direct;
         }
 

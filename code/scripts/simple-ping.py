@@ -5,7 +5,7 @@
 from code.messy.net.ethernet import Ethertype, ArpHandler
 from code.messy.net.ip import IpProtocolHandler, PacketToIp, IpPacket
 from code.messy.net.ip.icmp import IcmpHandler
-from code.messy.net.ip.route import DirectSubnet
+from code.messy.net.ip.route import LocalSubnet
 from java.net import InetAddress
 
 icmp = IcmpHandler()
@@ -16,10 +16,10 @@ pak2Ip = PacketToIp(protocol)
 arp = ArpHandler()
 
 address = InetAddress.getByName('10.0.0.2')
-DirectSubnet.create(address, 24, interface['eth1'])
+LocalSubnet.create(address, 24, interface['eth1'])
 
 address = InetAddress.getByName('10.1.0.2');
-DirectSubnet.create(address, 24, interface['eth2'])
+LocalSubnet.create(address, 24, interface['eth2'])
 
 interface['eth1'].subscribe(Ethertype.ARP, arp)
 interface['eth2'].subscribe(Ethertype.ARP, arp)

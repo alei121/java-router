@@ -15,7 +15,7 @@ import code.messy.net.ethernet.Ethertype;
 import code.messy.net.ip.IpPacket;
 import code.messy.net.ip.IpProtocolHandler;
 import code.messy.net.ip.PacketToIp;
-import code.messy.net.ip.route.DirectSubnet;
+import code.messy.net.ip.route.LocalSubnet;
 
 public class Main {
 
@@ -42,13 +42,13 @@ public class Main {
         InetAddress address = InetAddress.getByName(args[1]);
         int prefix = Integer.parseInt(args[2]);
         ports.add(p);
-        DirectSubnet.create(address, prefix, p);
+        LocalSubnet.create(address, prefix, p);
 
         p = new EthernetPort(args[3]);
         address = InetAddress.getByName(args[4]);
         prefix = Integer.parseInt(args[2]);
         ports.add(p);
-        DirectSubnet.create(address, prefix, p);
+        LocalSubnet.create(address, prefix, p);
         
         for (EthernetPort port : ports) {
             port.subscribe(Ethertype.ARP, arp);

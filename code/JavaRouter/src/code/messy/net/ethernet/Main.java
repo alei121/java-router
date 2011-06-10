@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import code.messy.net.ip.NetworkNumber;
-import code.messy.net.ip.route.DirectSubnet;
+import code.messy.net.ip.route.LocalSubnet;
 
 public class Main {
 
@@ -30,7 +30,7 @@ public class Main {
         int prefix = Integer.parseInt(args[2]);
         ports.add(p);
         NetworkNumber network = new NetworkNumber(address, prefix);
-        DirectSubnet.create(network, address, p, null);
+        LocalSubnet.create(network, address, p, null);
 
 
         p = new EthernetPort(args[3]);
@@ -38,7 +38,7 @@ public class Main {
         prefix = Integer.parseInt(args[5]);
         ports.add(p);
         network = new NetworkNumber(address, prefix);
-        DirectSubnet.create(network, address, p, null);
+        LocalSubnet.create(network, address, p, null);
         
         
         for (EthernetPort port : ports) {

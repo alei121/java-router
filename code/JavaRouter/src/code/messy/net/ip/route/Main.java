@@ -50,7 +50,7 @@ public class Main {
         short prefix = Short.parseShort(args[2]);
         ports.add(p);
         NetworkNumber network = new NetworkNumber(address, prefix);
-        DirectSubnet subnet = DirectSubnet.create(network, address, p, ip);
+        LocalSubnet subnet = LocalSubnet.create(network, address, p, ip);
         RoutingTable.getInstance().add(subnet);
 
         p = new EthernetPort(args[3]);
@@ -58,7 +58,7 @@ public class Main {
         prefix = Short.parseShort(args[5]);
         ports.add(p);
         network = new NetworkNumber(address, prefix);
-        subnet = DirectSubnet.create(network, address, p, ip);
+        subnet = LocalSubnet.create(network, address, p, ip);
         RoutingTable.getInstance().add(subnet);
 
         PacketToIp p2ip = new PacketToIp(route);

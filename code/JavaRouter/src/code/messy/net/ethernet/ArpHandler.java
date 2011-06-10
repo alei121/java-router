@@ -13,7 +13,7 @@ import java.util.HashMap;
 import code.messy.Handler;
 import code.messy.net.Dump;
 import code.messy.net.Packet;
-import code.messy.net.ip.route.DirectSubnet;
+import code.messy.net.ip.route.LocalSubnet;
 
 public class ArpHandler implements Handler<Packet> {
 
@@ -103,7 +103,7 @@ public class ArpHandler implements Handler<Packet> {
 
                 EthernetPort port = (EthernetPort) packet.getPort();
 
-                DirectSubnet subnet = DirectSubnet.getSubnet(targetAddress);
+                LocalSubnet subnet = LocalSubnet.getSubnet(targetAddress);
                 if (subnet != null && port == subnet.getLink()) {
                     ByteBuffer arp = ByteBuffer.allocateDirect(60);
 

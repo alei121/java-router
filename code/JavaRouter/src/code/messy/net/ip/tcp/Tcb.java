@@ -9,7 +9,7 @@ import java.util.Random;
 
 import code.messy.net.ip.IpHeader;
 import code.messy.net.ip.IpPacket;
-import code.messy.net.ip.route.DirectSubnet;
+import code.messy.net.ip.route.LocalSubnet;
 
 public class Tcb {
 	int snd_una, snd_nxt, snd_wnd, snd_up, snd_wl1, snd_wl2, iss;
@@ -22,7 +22,7 @@ public class Tcb {
 	enum Event { Open, Send, Receive, Close, Abort, Status, Segment, UserTimeout, RetransmissionTimeout, TimeWaitTimeout };
 		
 	TcpHeader replyHeader;
-	DirectSubnet subnet;
+	LocalSubnet subnet;
     InetAddress srcAddress, dstAddress;
     int srcPort, dstPort;
     
@@ -38,7 +38,7 @@ public class Tcb {
 		dstPort = tcp.getSrcPort();
 		
 		replyHeader = new TcpHeader(srcPort, dstPort);
-        subnet = DirectSubnet.getSubnet(srcAddress);
+        subnet = LocalSubnet.getSubnet(srcAddress);
 
         iss = generateISS();
 
@@ -55,7 +55,7 @@ public class Tcb {
 		this.srcAddress = srcAddress;
 		
 		replyHeader = new TcpHeader(srcPort, dstPort);
-        subnet = DirectSubnet.getSubnet(srcAddress);
+        subnet = LocalSubnet.getSubnet(srcAddress);
         
         iss = generateISS();
 

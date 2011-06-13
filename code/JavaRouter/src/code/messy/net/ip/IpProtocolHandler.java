@@ -6,10 +6,10 @@ package code.messy.net.ip;
 import java.util.HashMap;
 
 import code.messy.Handler;
-import code.messy.Publisher;
+import code.messy.Registrable;
 import code.messy.net.ip.IpPacket.Protocol;
 
-public class IpProtocolHandler implements Publisher<IpPacket.Protocol, Handler<IpPacket>>, Handler<IpPacket> {
+public class IpProtocolHandler implements Registrable<IpPacket.Protocol, Handler<IpPacket>>, Handler<IpPacket> {
     HashMap<Byte, Handler<IpPacket>> map = new HashMap<Byte, Handler<IpPacket>>();
 
     @Override
@@ -22,12 +22,12 @@ public class IpProtocolHandler implements Publisher<IpPacket.Protocol, Handler<I
     }
 
 	@Override
-	public void subscribe(Protocol type, Handler<IpPacket> handler) {
+	public void register(Protocol type, Handler<IpPacket> handler) {
         map.put(type.getValue(), handler);
 	}
 
 	@Override
-	public void subscribe(Handler<IpPacket> handler) {
+	public void register(Handler<IpPacket> handler) {
 		// TODO Auto-generated method stub
 		
 	}

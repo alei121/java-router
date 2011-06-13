@@ -31,7 +31,7 @@ public class Main {
 
         for (EthernetPort port : ports) {
             BridgePacketHandler bph = new BridgePacketHandler(bridge, port);
-            port.subscribe(bph);
+            port.register(bph);
         }
 
         for (EthernetPort port : ports) {

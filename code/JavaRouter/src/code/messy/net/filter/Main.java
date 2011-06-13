@@ -45,8 +45,8 @@ public class Main {
             ipr.add(my);
             Handler<IpPacket> ipf = new IpPacketFilter(address, ipr, ip2pak);
             Handler<Packet> ph = new PacketToIp(ipf);
-            port.subscribe(Ethertype.IP, ph);
-            port.subscribe(bph);
+            port.register(Ethertype.IP, ph);
+            port.register(bph);
         }
         
         for (EthernetPort ep : ports) {

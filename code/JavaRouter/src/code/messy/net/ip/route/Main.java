@@ -41,7 +41,7 @@ public class Main {
         
         IcmpHandler icmp = new IcmpHandler();
         IpProtocolHandler ip = new IpProtocolHandler();
-        ip.subscribe(IpPacket.Protocol.ICMP, icmp);
+        ip.register(IpPacket.Protocol.ICMP, icmp);
 
         
         
@@ -66,8 +66,8 @@ public class Main {
         for (EthernetPort port : ports) {
             ArpHandler arp = new ArpHandler();
             
-            port.subscribe(Ethertype.ARP, arp);
-            port.subscribe(Ethertype.IP, p2ip);
+            port.register(Ethertype.ARP, arp);
+            port.register(Ethertype.IP, p2ip);
         }
         
         for (EthernetPort ep : ports) {

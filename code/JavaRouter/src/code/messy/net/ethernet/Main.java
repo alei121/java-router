@@ -43,7 +43,7 @@ public class Main {
         
         for (EthernetPort port : ports) {
             ArpHandler arp = new ArpHandler();
-            port.subscribe(Ethertype.ARP, arp);
+            port.register(Ethertype.ARP, arp);
         }
         
         

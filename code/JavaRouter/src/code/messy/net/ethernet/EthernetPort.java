@@ -9,14 +9,14 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 
 import code.messy.Handler;
-import code.messy.Publisher;
+import code.messy.Registrable;
 import code.messy.net.Dump;
 import code.messy.net.Packet;
 import code.messy.net.Port;
 import code.messy.net.RawSocket;
 import code.messy.net.ip.IpLinkSupport;
 
-public class EthernetPort extends Thread implements Port, IpLinkSupport, Publisher<Ethertype, Handler<Packet>> {
+public class EthernetPort extends Thread implements Port, IpLinkSupport, Registrable<Ethertype, Handler<Packet>> {
     RawSocket socket;
     MacAddress mac;
 
@@ -104,12 +104,12 @@ public class EthernetPort extends Thread implements Port, IpLinkSupport, Publish
     Handler<Packet> defaultHandler = null;
 
 	@Override
-	public void subscribe(Ethertype type, Handler<Packet> handler) {
+	public void register(Ethertype type, Handler<Packet> handler) {
         map.put(type, handler);
 	}
 
 	@Override
-	public void subscribe(Handler<Packet> handler) {
+	public void register(Handler<Packet> handler) {
 		defaultHandler = handler;
 	}
 

@@ -41,8 +41,8 @@ public class Main {
         tcp.add(null, Integer.parseInt(args[6]), myTcp);
         
         IpProtocolHandler protocol = new IpProtocolHandler();
-        protocol.subscribe(IpPacket.Protocol.ICMP, icmp);
-        protocol.subscribe(IpPacket.Protocol.TCP, tcp);
+        protocol.register(IpPacket.Protocol.ICMP, icmp);
+        protocol.register(IpPacket.Protocol.TCP, tcp);
         PacketToIp pak2Ip = new PacketToIp(protocol);
 
         EthernetPort p = new EthernetPort(args[0]);
@@ -63,8 +63,8 @@ public class Main {
         for (EthernetPort port : ports) {
             ArpHandler arp = new ArpHandler();
             
-            port.subscribe(Ethertype.ARP, arp);
-            port.subscribe(Ethertype.IP, pak2Ip);
+            port.register(Ethertype.ARP, arp);
+            port.register(Ethertype.IP, pak2Ip);
         }
         
         for (EthernetPort ep : ports) {

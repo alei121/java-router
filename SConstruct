@@ -5,7 +5,7 @@ def build_jar(project, class_files, env):
 	project_build_dir = os.path.join(build_dir, project)
 	target_jar = os.path.join(deploy_lib_dir, project + '.jar')
 	denv['JARCHDIR'] = project_build_dir
-	return denv.Jar(target = target_jar, source = class_files)
+	return denv.Jar(target = target_jar, source = project_build_dir)
 
 def build_javac(project, env):
 	project_build_dir = os.path.join(build_dir, project)

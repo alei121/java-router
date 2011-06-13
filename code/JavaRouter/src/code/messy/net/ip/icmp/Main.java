@@ -33,7 +33,7 @@ public class Main {
         
         IcmpHandler icmp = new IcmpHandler();
         IpProtocolHandler protocol = new IpProtocolHandler();
-        protocol.subscribe(IpPacket.Protocol.ICMP, icmp);
+        protocol.register(IpPacket.Protocol.ICMP, icmp);
         PacketToIp pak2Ip = new PacketToIp(protocol);
 
         ArpHandler arp = new ArpHandler();
@@ -51,8 +51,8 @@ public class Main {
         LocalSubnet.create(address, prefix, p);
         
         for (EthernetPort port : ports) {
-            port.subscribe(Ethertype.ARP, arp);
-            port.subscribe(Ethertype.IP, pak2Ip);
+            port.register(Ethertype.ARP, arp);
+            port.register(Ethertype.IP, pak2Ip);
         }
         
         for (EthernetPort ep : ports) {

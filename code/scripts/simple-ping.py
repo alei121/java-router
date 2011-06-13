@@ -10,7 +10,7 @@ from java.net import InetAddress
 
 icmp = IcmpHandler()
 protocol = IpProtocolHandler()
-protocol.subscribe(IpPacket.Protocol.ICMP, icmp)
+protocol.register(IpPacket.Protocol.ICMP, icmp)
 pak2Ip = PacketToIp(protocol)
 
 arp = ArpHandler()
@@ -21,11 +21,11 @@ LocalSubnet.create(address, 24, interface['eth1'])
 address = InetAddress.getByName('10.1.0.2');
 LocalSubnet.create(address, 24, interface['eth2'])
 
-interface['eth1'].subscribe(Ethertype.ARP, arp)
-interface['eth2'].subscribe(Ethertype.ARP, arp)
+interface['eth1'].register(Ethertype.ARP, arp)
+interface['eth2'].register(Ethertype.ARP, arp)
 
-interface['eth1'].subscribe(Ethertype.IP, pak2Ip)
-interface['eth2'].subscribe(Ethertype.IP, pak2Ip)
+interface['eth1'].register(Ethertype.IP, pak2Ip)
+interface['eth2'].register(Ethertype.IP, pak2Ip)
 
 interface['eth1'].start()
 interface['eth2'].start()

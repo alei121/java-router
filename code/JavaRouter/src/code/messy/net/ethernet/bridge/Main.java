@@ -1,7 +1,7 @@
 /*
  * Created on Aug 8, 2008
  */
-package code.messy.net.bridge;
+package code.messy.net.ethernet.bridge;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,14 +26,10 @@ public class Main {
         	EthernetPort ep = new EthernetPort(args[i]);
         	ports.add(ep);
         }
-        
         Bridge bridge = new Bridge("MyBridge", ports);
-
         for (EthernetPort port : ports) {
-            BridgePacketHandler bph = new BridgePacketHandler(bridge, port);
-            port.register(bph);
+            port.register(bridge);
         }
-
         for (EthernetPort port : ports) {
 			port.start();
 		}

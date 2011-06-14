@@ -19,8 +19,10 @@ import code.messy.net.ip.IpLinkSupport;
 public class EthernetPort extends Thread implements Port, IpLinkSupport, Registrable<Ethertype, Handler<Packet>> {
     RawSocket socket;
     MacAddress mac;
+    String port;
 
     public EthernetPort(String port) throws IOException {
+    	this.port = port;
         socket = new RawSocket(port);
         mac = new MacAddress(socket.getHardwareAddress());
     }
@@ -31,7 +33,7 @@ public class EthernetPort extends Thread implements Port, IpLinkSupport, Registr
 
     @Override
     public String toString() {
-        return "[eth:" + socket + ":mac" + mac + "]";
+        return "[port=" + port + ", mac=" + mac + "]";
     }
 
     

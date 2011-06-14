@@ -10,4 +10,4 @@ export CLASSPATH=${CLASSPATH}:${ROOT_PATH}/build/deploy/lib/JythonRouter.jar
 export CLASSPATH=${CLASSPATH}:${ROOT_PATH}/build/deploy/lib/RawSocket.jar
 export CLASSPATH=${CLASSPATH}:${ROOT_PATH}/ThirdParty/jython2.5.1/jython.jar
 
-java Main preconfig.py $1
+java code.messy.script.JythonReader preconfig.py $1

@@ -10,10 +10,9 @@ import java.util.List;
 
 import code.messy.Handler;
 import code.messy.net.Packet;
-import code.messy.net.bridge.Bridge;
-import code.messy.net.bridge.BridgePacketHandler;
 import code.messy.net.ethernet.EthernetPort;
 import code.messy.net.ethernet.Ethertype;
+import code.messy.net.ethernet.bridge.Bridge;
 import code.messy.net.ip.IpLoggingHandler;
 import code.messy.net.ip.IpPacket;
 import code.messy.net.ip.IpToPacket;
@@ -37,8 +36,7 @@ public class Main {
 
         for (EthernetPort port : ports) {
             InetAddress address = InetAddress.getByName("10.1.0.2");
-            BridgePacketHandler bph = new BridgePacketHandler(bridge, port);
-            IpToPacket ip2pak = new IpToPacket(bph);
+            IpToPacket ip2pak = new IpToPacket(bridge);
             IpPacketRepeater ipr = new IpPacketRepeater();
             IpLoggingHandler my = new IpLoggingHandler();
             ipr.add(ip2pak);
@@ -46,7 +44,7 @@ public class Main {
             Handler<IpPacket> ipf = new IpPacketFilter(address, ipr, ip2pak);
             Handler<Packet> ph = new PacketToIp(ipf);
             port.register(Ethertype.IP, ph);
-            port.register(bph);
+            port.register(bridge);
         }
         
         for (EthernetPort ep : ports) {

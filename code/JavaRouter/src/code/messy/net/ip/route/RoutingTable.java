@@ -9,8 +9,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.Map.Entry;
 
-import code.messy.net.ip.IpUtil;
 import code.messy.net.ip.NetworkNumber;
+import code.messy.net.ip.util.Mask;
 
 public class RoutingTable {
     // TODO need "host route".
@@ -72,7 +72,7 @@ public class RoutingTable {
     
     public Subnet getSubnetByMasking(InetAddress address) {
         for (InetAddress mask : maskSet) {
-            InetAddress network = IpUtil.applyMask(address, mask);
+            InetAddress network = Mask.applyMask(address, mask);
             HashMap<InetAddress, Subnet> networkMap = maskMap.get(mask);
             Subnet subnet = networkMap.get(network);
             if (subnet != null)

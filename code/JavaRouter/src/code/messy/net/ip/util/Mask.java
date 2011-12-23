@@ -1,12 +1,12 @@
 /*
  * Created on Aug 29, 2008
  */
-package code.messy.net.ip;
+package code.messy.net.ip.util;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-public class IpUtil {
+public class Mask {
 
     static public InetAddress applyMask(InetAddress address, InetAddress mask) {
         byte[] b = address.getAddress();

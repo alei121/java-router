@@ -16,6 +16,16 @@ public class Dump {
         }
         System.out.println();
     }
+    
+    public static void dump(ByteBuffer bb, int offset, int length) {
+    	int pos = bb.position();
+    	bb.position(offset);
+        for (int i = 0; i < length; i++) {
+            System.out.print(Integer.toHexString(bb.get() & 0xFF) + " ");
+        }
+        System.out.println();
+        bb.position(pos);
+    }
 
     public static void dump(byte[] b) {
         int len = b.length;

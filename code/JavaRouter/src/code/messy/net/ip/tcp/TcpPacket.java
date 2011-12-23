@@ -8,6 +8,7 @@ import java.nio.ByteBuffer;
 import code.messy.net.Packet;
 import code.messy.net.Port;
 import code.messy.net.ip.IpPacket;
+import code.messy.net.ip.Tuple;
 
 public class TcpPacket implements Packet {
     IpPacket ip;
@@ -125,4 +126,24 @@ public class TcpPacket implements Packet {
     	sb.append(",dataLength=" + dataLength);
     	return sb.toString();
     }
+
+	public int getSeqNumber() {
+		return seqNumber;
+	}
+
+	public void setSeqNumber(int seqNumber) {
+		this.seqNumber = seqNumber;
+	}
+
+	public int getAckNumber() {
+		return ackNumber;
+	}
+
+	public void setAckNumber(int ackNumber) {
+		this.ackNumber = ackNumber;
+	}
+	
+	public Tuple getTuple() {
+		return new Tuple(ip.getSourceAddress(), ip.getDestinationAddress(), srcPort, dstPort);
+	}
 }

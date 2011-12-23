@@ -6,25 +6,27 @@ package code.messy.net.ip;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 
+import code.messy.net.ip.util.Mask;
+
 public class NetworkNumber {
     InetAddress address;
     InetAddress mask;
     int prefix;
 
     public NetworkNumber(InetAddress address, InetAddress mask) {
-        this.address = IpUtil.applyMask(address, mask);
+        this.address = Mask.applyMask(address, mask);
         this.mask = mask;
-        prefix = IpUtil.maskToPrefix(mask); 
+        prefix = Mask.maskToPrefix(mask); 
     }
 
     public NetworkNumber(InetAddress address, int prefix) {
         if (address instanceof Inet4Address) {
-            mask = IpUtil.prefixToMask(4, prefix);
+            mask = Mask.prefixToMask(4, prefix);
         }
         else {
-            mask = IpUtil.prefixToMask(16, prefix);
+            mask = Mask.prefixToMask(16, prefix);
         }
-        this.address = IpUtil.applyMask(address, mask);
+        this.address = Mask.applyMask(address, mask);
         this.prefix = prefix;
     }
 

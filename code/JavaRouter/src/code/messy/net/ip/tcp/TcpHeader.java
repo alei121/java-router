@@ -1,6 +1,10 @@
 package code.messy.net.ip.tcp;
 
+import java.net.InetAddress;
 import java.nio.ByteBuffer;
+
+import code.messy.net.ip.IpPacket;
+import code.messy.net.ip.util.Checksum;
 
 public class TcpHeader {
     int srcPort;
@@ -12,7 +16,7 @@ public class TcpHeader {
     int urgentPointer;
     
     // TODO with options in future
-    int dataOffset = 4;
+    int dataOffset = 5;
     
     boolean CWR, ECE;
     boolean URG, ACK, PSH, RST, SYN, FIN;
@@ -22,8 +26,26 @@ public class TcpHeader {
     	this.dstPort = dstPort;
 	}
     
-    public ByteBuffer getByteBuffer() {
-    	ByteBuffer bb = ByteBuffer.allocate(20);
+    public ByteBuffer getByteBuffer(InetAddress srcAddress, InetAddress dstAddress, ByteBuffer content) {
+    	int posChecksum = 0;
+    	int posRealHeader = 0;
+    	
+    	ByteBuffer bb = ByteBuffer.allocate(12 + 20);
+    	
+    	// Pseudo header
+        bb.put(srcAddress.getAddress());
+        bb.put(dstAddress.getAddress());
+        bb.put((byte)0);
+        bb.put(IpPacket.Protocol.TCP.getValue());
+        if (content != null) {
+        	bb.putShort((short)(20 + content.remaining()));
+        }
+        else {
+        	bb.putShort((short)20);
+        }
+    	
+        // Real header
+        posRealHeader = bb.position();
     	bb.putShort((short)srcPort);
     	bb.putShort((short)dstPort);
     	bb.putInt(seqNumber);
@@ -42,10 +64,21 @@ public class TcpHeader {
     	bb.putShort((short)window);
     	
     	// TODO checksum later on
+    	posChecksum = bb.position();
     	bb.putShort((short)0);
     	bb.putShort((short)urgentPointer);
     	
     	bb.flip();
+    	
+    	ByteBuffer[] bbs = new ByteBuffer[2];
+    	bbs[0] = bb;
+    	bbs[1] = content;
+    	short checksum = Checksum.getOnesCompliment(bbs);
+    	bb.putShort(posChecksum, checksum);
+    	
+    	// Start from real header
+    	bb.position(posRealHeader);
+    	
     	return bb;
     }
 
@@ -112,4 +145,27 @@ public class TcpHeader {
 	public void clearFlags() {
 		CWR = ECE = URG = ACK = PSH = RST = SYN = FIN = false;
 	}
+	
+    @Override
+    public String toString() {
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("TcpPacket srcPort=" + srcPort);
+    	sb.append(",dstPort=" + dstPort);
+    	sb.append(",seqNumber=" + seqNumber);
+    	sb.append(",ackNumber=" + ackNumber);
+    	sb.append(",CWR=" + CWR);
+    	sb.append(",ECE=" + ECE);
+    	sb.append(",URG=" + URG);
+    	sb.append(",ACK=" + ACK);
+    	sb.append(",PSH=" + PSH);
+    	sb.append(",RST=" + RST);
+    	sb.append(",SYN=" + SYN);
+    	sb.append(",FIN=" + FIN);
+    	sb.append(",window=" + window);
+    	sb.append(",checksum=" + checksum);
+    	sb.append(",urgentPointer=" + urgentPointer);
+    	sb.append(",dataOffset=" + dataOffset);
+    	return sb.toString();
+    }
+
 }

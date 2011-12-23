@@ -14,19 +14,6 @@ import java.util.HashMap;
  */
 public class TupleMap<E> {
 
-    class Tuple {
-        InetAddress srcAddress, dstAddress;
-        int srcPort, dstPort;
-
-        public Tuple(InetAddress srcAddress, InetAddress dstAddress,
-                int srcPort, int dstPort) {
-            this.srcAddress = srcAddress;
-            this.dstAddress = dstAddress;
-            this.srcPort = srcPort;
-            this.dstPort = dstPort;
-        }
-    }
-
     class DstPortMap extends HashMap<Integer, E> {
         private static final long serialVersionUID = 1L;
     }
@@ -69,9 +56,13 @@ public class TupleMap<E> {
     }
 
     public void add(Tuple tuple, E e) {
-        add(tuple.dstAddress, tuple.srcAddress, tuple.dstPort, tuple.srcPort, e);
+        add(tuple.srcAddress, tuple.dstAddress, tuple.srcPort, tuple.dstPort, e);
     }
 
+    public E get(Tuple tuple) {
+    	return get(tuple.srcAddress, tuple.dstAddress, tuple.srcPort, tuple.dstPort);
+    }
+    
     public E get(InetAddress srcAddress, InetAddress dstAddress, int srcPort,
             int dstPort) {
         DstAddressMap dstAddressMap = srcAddressMap.get(srcAddress);

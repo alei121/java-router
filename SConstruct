@@ -1,7 +1,7 @@
 import os
 
 def build_jar(project, class_files, env):
-	denv = env.Copy()
+	denv = env.Clone()
 	project_build_dir = os.path.join(build_dir, project)
 	target_jar = os.path.join(deploy_lib_dir, project + '.jar')
 	denv['JARCHDIR'] = project_build_dir
@@ -26,7 +26,7 @@ deploy_lib_dir = os.path.join(root_dir, 'build', 'deploy', 'lib')
 # Jars for building
 env['JAVACLASSPATH'].append(os.path.join(deploy_lib_dir, 'RawSocket.jar'))
 env['JAVACLASSPATH'].append(os.path.join(deploy_lib_dir, 'JavaRouter.jar'))
-env['JAVACLASSPATH'].append(os.path.join(thirdparty_dir, 'jython2.5.1', 'jython.jar'))
+env['JAVACLASSPATH'].append(os.path.join(thirdparty_dir, 'jython2.5.2', 'jython.jar'))
 
 # Java classes
 RawSocket_class_files = build_javac('RawSocket', env)

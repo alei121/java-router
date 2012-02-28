@@ -11,38 +11,43 @@ import code.messy.net.ip.IpPacket;
 import code.messy.net.ip.Tuple;
 
 // TODO seems only for incoming packet
-public class TcpPacket implements Packet {
+public class IncomingSegment implements Packet {
     IpPacket ip;
     int srcPort;
     int dstPort;
-    int seqNumber;
-    int ackNumber;
-    int window;
+    
+    // RFC Section 3.2 Current segment variable
+    int SEG_SEQ;
+    int SEG_ACK;
+    int SEG_LEN;
+    int SEG_WND;
+    int SEG_UP;
+    int SEG_PRC;
+    
     int checksum;
     int urgentPointer;
     
-    boolean CWR, ECE;
-    boolean URG, ACK, PSH, RST, SYN, FIN;
+	boolean CWR, ECE;
+	boolean URG, ACK, PSH, RST, SYN, FIN;
     
     int headerOffset;
     int dataOffset;
-    int dataLength;
     
     final static int maxDataLength = 2048;
     
-    public TcpPacket() {
+    public IncomingSegment() {
     	// TODO Try build or extract directly from BB
     }
     
-    public TcpPacket(IpPacket ip) {
+    public IncomingSegment(IpPacket ip) {
         this.ip = ip;
         
         ByteBuffer bb = ip.getByteBuffer();
         headerOffset = ip.getDataOffset();
         srcPort = bb.getShort(headerOffset);
         dstPort = bb.getShort(headerOffset + 2);
-        seqNumber = bb.getInt(headerOffset + 4);
-        ackNumber = bb.getInt(headerOffset + 8);
+        SEG_SEQ = bb.getInt(headerOffset + 4);
+        SEG_ACK = bb.getInt(headerOffset + 8);
         short b = bb.getShort(headerOffset + 12);
         dataOffset = (b >> 10) & 0x3C;
         CWR = (b & 0x80) != 0;
@@ -54,11 +59,11 @@ public class TcpPacket implements Packet {
         SYN = (b & 0x2) != 0;
         FIN = (b & 0x1) != 0;
         
-        window = bb.getShort(headerOffset + 14);
+        SEG_WND = bb.getShort(headerOffset + 14);
         checksum = bb.getShort(headerOffset + 16);
         urgentPointer = bb.getShort(headerOffset + 18);
         
-        dataLength = ip.getDataLength() - dataOffset;
+        SEG_LEN = ip.getDataLength() - dataOffset;
         dataOffset += headerOffset;
     }
 
@@ -91,7 +96,7 @@ public class TcpPacket implements Packet {
 
     @Override
     public int getDataLength() {
-        return dataLength;
+        return SEG_LEN;
     }
 
     @Override
@@ -109,8 +114,8 @@ public class TcpPacket implements Packet {
     	StringBuilder sb = new StringBuilder();
     	sb.append("TcpPacket srcPort=" + srcPort);
     	sb.append(",dstPort=" + dstPort);
-    	sb.append(",seqNumber=" + seqNumber);
-    	sb.append(",ackNumber=" + ackNumber);
+    	sb.append(",seqNumber=" + SEG_SEQ);
+    	sb.append(",ackNumber=" + SEG_ACK);
     	sb.append(",CWR=" + CWR);
     	sb.append(",ECE=" + ECE);
     	sb.append(",URG=" + URG);
@@ -119,29 +124,29 @@ public class TcpPacket implements Packet {
     	sb.append(",RST=" + RST);
     	sb.append(",SYN=" + SYN);
     	sb.append(",FIN=" + FIN);
-    	sb.append(",window=" + window);
+    	sb.append(",window=" + SEG_WND);
     	sb.append(",checksum=" + checksum);
     	sb.append(",urgentPointer=" + urgentPointer);
     	sb.append(",headerOffset=" + headerOffset);
     	sb.append(",dataOffset=" + dataOffset);
-    	sb.append(",dataLength=" + dataLength);
+    	sb.append(",dataLength=" + SEG_LEN);
     	return sb.toString();
     }
 
 	public int getSeqNumber() {
-		return seqNumber;
+		return SEG_SEQ;
 	}
 
 	public void setSeqNumber(int seqNumber) {
-		this.seqNumber = seqNumber;
+		this.SEG_SEQ = seqNumber;
 	}
 
 	public int getAckNumber() {
-		return ackNumber;
+		return SEG_ACK;
 	}
 
 	public void setAckNumber(int ackNumber) {
-		this.ackNumber = ackNumber;
+		this.SEG_ACK = ackNumber;
 	}
 	
 	public Tuple getTuple() {

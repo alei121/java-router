@@ -1,6 +1,7 @@
 package code.messy.net.ip.tcp;
 
 import java.nio.BufferOverflowException;
+import java.nio.ByteBuffer;
 
 /*
  * start and end are indexes
@@ -31,6 +32,16 @@ public class RingBuffer {
 		return max - size;
 	}
 
+	public void write(ByteBuffer bb, int offset, int length) {
+		// TODO fix efficiency
+		byte[] b = new byte[length];
+		int pos = bb.position();
+		bb.position(offset);
+		bb.get(b);
+		bb.position(pos);
+		write(b);
+	}
+	
 	public void write(byte[] b) throws BufferOverflowException {
 		write(b, 0, b.length);
 	}
@@ -88,5 +99,13 @@ public class RingBuffer {
 		}
 		size -= rlen;
 		return rlen;
+	}
+	
+	public int read(ByteBuffer bb) {
+		// TODO fix efficiency
+		byte[] b = new byte[1024];
+		int length = read(b);
+		bb.put(b, 0, length);
+		return length;
 	}
 }

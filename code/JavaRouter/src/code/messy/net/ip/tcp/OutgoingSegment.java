@@ -6,15 +6,18 @@ import java.nio.ByteBuffer;
 import code.messy.net.ip.IpPacket;
 import code.messy.net.ip.util.Checksum;
 
-// TODO seems always for outgoing packet
-public class TcpHeader {
+public class OutgoingSegment {
+    // RFC Section 3.2 Current segment variable
+    int SEG_SEQ;
+    int SEG_ACK;
+    int SEG_LEN;
+    int SEG_WND;
+    int SEG_UP;
+    int SEG_PRC;
+    
     int srcPort;
     int dstPort;
-    int seqNumber;
-    int ackNumber;
-    int window;
     int checksum;
-    int urgentPointer;
     
     // TODO with options in future
     int dataOffset = 5;
@@ -22,7 +25,7 @@ public class TcpHeader {
     boolean CWR, ECE;
     boolean URG, ACK, PSH, RST, SYN, FIN;
     
-    public TcpHeader(int srcPort, int dstPort) {
+    public OutgoingSegment(int srcPort, int dstPort) {
     	this.srcPort = srcPort;
     	this.dstPort = dstPort;
 	}
@@ -49,8 +52,8 @@ public class TcpHeader {
         posRealHeader = bb.position();
     	bb.putShort((short)srcPort);
     	bb.putShort((short)dstPort);
-    	bb.putInt(seqNumber);
-    	bb.putInt(ackNumber);
+    	bb.putInt(SEG_SEQ);
+    	bb.putInt(SEG_ACK);
     	int bits;
     	bits = dataOffset << 12;
     	bits |= (CWR ? 0x80 : 0);
@@ -62,12 +65,12 @@ public class TcpHeader {
     	bits |= (SYN ? 0x02 : 0);
     	bits |= (FIN ? 0x01 : 0);
     	bb.putShort((short)bits);
-    	bb.putShort((short)window);
+    	bb.putShort((short)SEG_WND);
     	
     	// TODO checksum later on
     	posChecksum = bb.position();
     	bb.putShort((short)0);
-    	bb.putShort((short)urgentPointer);
+    	bb.putShort((short)SEG_UP);
     	
     	bb.flip();
     	
@@ -87,28 +90,8 @@ public class TcpHeader {
 		this.srcPort = srcPort;
 	}
 
-	public void setDstPort(int dstPort) {
-		this.dstPort = dstPort;
-	}
-
-	public void setSeqNumber(int seqNumber) {
-		this.seqNumber = seqNumber;
-	}
-
-	public void setAckNumber(int ackNumber) {
-		this.ackNumber = ackNumber;
-	}
-
-	public void setWindow(int window) {
-		this.window = window;
-	}
-
 	public void setChecksum(int checksum) {
 		this.checksum = checksum;
-	}
-
-	public void setUrgentPointer(int urgentPointer) {
-		this.urgentPointer = urgentPointer;
 	}
 
 	public void setCWR(boolean cWR) {
@@ -152,8 +135,8 @@ public class TcpHeader {
     	StringBuilder sb = new StringBuilder();
     	sb.append("TcpPacket srcPort=" + srcPort);
     	sb.append(",dstPort=" + dstPort);
-    	sb.append(",seqNumber=" + seqNumber);
-    	sb.append(",ackNumber=" + ackNumber);
+    	sb.append(",SEG_SEQ=" + SEG_SEQ);
+    	sb.append(",SEG_ACK=" + SEG_ACK);
     	sb.append(",CWR=" + CWR);
     	sb.append(",ECE=" + ECE);
     	sb.append(",URG=" + URG);
@@ -162,9 +145,9 @@ public class TcpHeader {
     	sb.append(",RST=" + RST);
     	sb.append(",SYN=" + SYN);
     	sb.append(",FIN=" + FIN);
-    	sb.append(",window=" + window);
+    	sb.append(",SEG_WND=" + SEG_WND);
     	sb.append(",checksum=" + checksum);
-    	sb.append(",urgentPointer=" + urgentPointer);
+    	sb.append(",SEG_UP=" + SEG_UP);
     	sb.append(",dataOffset=" + dataOffset);
     	return sb.toString();
     }

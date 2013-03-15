@@ -2,10 +2,14 @@ package code.messy.net.ip.tcp;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.Socket;
+import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Random;
+
+import org.python.modules.synchronize;
 
 import code.messy.net.Dump;
 import code.messy.net.ip.IpHeader;
@@ -28,10 +32,12 @@ public class Tcb {
 	// TCP RFC 3.9 Event Processing
 	public enum Event { OPEN, SEND, RECEIVE, CLOSE, ABORT, STATUS, SEGMENT_ARRIVES, USER_TIMEOUT, RETRANSMISSION_TIMEOUT, TIME_WAIT_TIMEOUT };
 		
-	OutgoingSegment outgoingSegment;
+	OutgoingSegment out;
 	LocalSubnet subnet;
     InetAddress srcAddress, dstAddress;
     int srcPort, dstPort;
+    
+    RfcSocket foreignSocket, localSocket;
     
     State currentState;
     ByteBufferQueue outgoingQueue = new ByteBufferQueue();
@@ -74,15 +80,15 @@ public class Tcb {
 		dstAddress = tuple.getDstAddress();
 		dstPort = tuple.getDstPort();
 
-		outgoingSegment = new OutgoingSegment(srcPort, dstPort);
+		out = new OutgoingSegment(srcPort, dstPort);
         subnet = LocalSubnet.getSubnet(srcAddress);
 
         ISS = generateISS();
         RCV_WND = buffer.remaining();
 
         // RFC Open call in CLOSED state. active and valid socket
-        outgoingSegment.setSYN(true);
-        outgoingSegment.SEG_SEQ = ISS;
+        out.setSYN(true);
+        out.SEG_SEQ = ISS;
         send();
         SND_UNA = ISS;
         SND_NXT = ISS + 1;
@@ -98,7 +104,7 @@ public class Tcb {
 		dstAddress = tcp.getIp().getSourceAddress();
 		dstPort = tcp.getSrcPort();
 		
-		outgoingSegment = new OutgoingSegment(srcPort, dstPort);
+		out = new OutgoingSegment(srcPort, dstPort);
         subnet = LocalSubnet.getSubnet(srcAddress);
 
         ISS = generateISS();
@@ -118,14 +124,14 @@ public class Tcb {
 		this.dstAddress = dstAddress;
 		this.srcAddress = srcAddress;
 		
-		outgoingSegment = new OutgoingSegment(srcPort, dstPort);
+		out = new OutgoingSegment(srcPort, dstPort);
         subnet = LocalSubnet.getSubnet(srcAddress);
         
         ISS = generateISS();
 
         // Active OPEN
-        outgoingSegment.setSYN(true);
-        outgoingSegment.SEG_SEQ = ISS;
+        out.setSYN(true);
+        out.SEG_SEQ = ISS;
         send();
         SND_UNA = ISS;
         SND_NXT = ISS + 1;
@@ -171,27 +177,27 @@ public class Tcb {
 	
 	void send() throws IOException {
 		// TODO put here??? use RCV_WND???
-        outgoingSegment.SEG_WND = buffer.remaining();
+        out.SEG_WND = buffer.remaining();
         
         // TODO put here???
-        outgoingSegment.SEG_ACK = RCV_NXT;
+        out.SEG_ACK = RCV_NXT;
 
 		InetAddress src = subnet.getSrcAddress();
 		InetAddress dst = dstAddress;
         ByteBuffer[] bbs = new ByteBuffer[2];
-        bbs[1] = outgoingSegment.getByteBuffer(src, dst, null);
+        bbs[1] = out.getByteBuffer(src, dst, null);
         bbs[0] = IpHeader.create(src, dst, IpPacket.Protocol.TCP, bbs);
         subnet.send(dstAddress, bbs);
         
-        outgoingSegment.clearFlags();
+        out.clearFlags();
 	}
 	
 	void sendPayload() throws IOException, InterruptedException {
 		// TODO put here??? use RCV_WND???
-        outgoingSegment.SEG_WND = buffer.remaining();
+        out.SEG_WND = buffer.remaining();
         
         // TODO put here???
-        outgoingSegment.SEG_ACK = RCV_NXT;
+        out.SEG_ACK = RCV_NXT;
         
         // TODO reuse payload. setup size constant
         ByteBuffer payload = ByteBuffer.allocate(1024);
@@ -202,11 +208,11 @@ public class Tcb {
 		InetAddress src = subnet.getSrcAddress();
 		InetAddress dst = dstAddress;
         ByteBuffer[] bbs = new ByteBuffer[2];
-        bbs[1] = outgoingSegment.getByteBuffer(src, dst, payload);
+        bbs[1] = out.getByteBuffer(src, dst, payload);
         bbs[0] = IpHeader.create(src, dst, IpPacket.Protocol.TCP, bbs);
         subnet.send(dstAddress, bbs);
         
-        outgoingSegment.clearFlags();
+        out.clearFlags();
 	}
 	
 	State stateListen(Event event, TcpPacket tcp) throws IOException {
@@ -215,8 +221,8 @@ public class Tcb {
 			return State.CLOSED;
 		}
 		else if (event == Event.SEND) {
-	        outgoingSegment.SEG_SEQ = ISS;
-			outgoingSegment.setSYN(true);
+	        out.SEG_SEQ = ISS;
+			out.setSYN(true);
 			send();
 			SND_UNA = ISS;
 			SND_NXT = ISS + 1;
@@ -239,11 +245,11 @@ public class Tcb {
 				RCV_NXT = SEG_SEQ + 1;
 				IRS = SEG_SEQ;
 				
-		        outgoingSegment.SEG_SEQ = ISS;
-		        outgoingSegment.SEG_ACK = RCV_NXT;
-		        outgoingSegment.SEG_WND = RCV_WND;
-				outgoingSegment.setSYN(true);
-				outgoingSegment.setACK(true);
+		        out.SEG_SEQ = ISS;
+		        out.SEG_ACK = RCV_NXT;
+		        out.SEG_WND = RCV_WND;
+				out.setSYN(true);
+				out.setACK(true);
 				send();
 				SND_NXT = ISS + 1;
 				SND_UNA = ISS;
@@ -255,7 +261,7 @@ public class Tcb {
 
 	State stateSynRcvd(Event event, TcpPacket tcp) throws IOException {
 		if (event == Event.CLOSE) {
-			outgoingSegment.setFIN(true);
+			out.setFIN(true);
 			send();
 			return State.FIN_WAIT1;
 		}
@@ -267,7 +273,7 @@ public class Tcb {
 					return State.ESTABLISHED;
 				}
 				else {
-					outgoingSegment.setRST(true);
+					out.setRST(true);
 					send();
 					// TODO close???
 					return State.CLOSED;
@@ -280,7 +286,7 @@ public class Tcb {
 	State stateSynSent(Event event, TcpPacket tcp) throws IOException {
 		if (event == Event.SEGMENT_ARRIVES) {
 			if (tcp.SYN) {
-				outgoingSegment.setACK(true);
+				out.setACK(true);
 				send();
 				if (tcp.ACK) {
 					return State.ESTABLISHED;
@@ -295,7 +301,7 @@ public class Tcb {
 	State stateEstab(Event event, TcpPacket tcp) throws IOException {
 		Dump.dumpIndent();
 		if (event == Event.CLOSE) {
-			outgoingSegment.setFIN(true);
+			out.setFIN(true);
 			send();
 			return State.FIN_WAIT1;
 		}
@@ -314,7 +320,7 @@ public class Tcb {
 			
 			// TODO what is this??
 			if (tcp.FIN) {
-				outgoingSegment.setACK(true);
+				out.setACK(true);
 				send();
 				Dump.dumpDedent();
 				return State.CLOSE_WAIT;
@@ -331,7 +337,7 @@ public class Tcb {
 				return State.FIN_WAIT2;
 			}
 			else if (tcp.FIN) {
-				outgoingSegment.setACK(true);
+				out.setACK(true);
 				send();
 				return State.CLOSING;
 			}
@@ -342,7 +348,7 @@ public class Tcb {
 	State stateFinWait2(Event event, TcpPacket tcp) throws IOException {
 		if (event == Event.SEGMENT_ARRIVES) {
 			if (tcp.FIN) {
-				outgoingSegment.setACK(true);
+				out.setACK(true);
 				send();
 				return State.TIME_WAIT;
 			}
@@ -370,7 +376,7 @@ public class Tcb {
 	
 	State stateCloseWait(Event event, TcpPacket tcp) throws IOException {
 		if (event == Event.CLOSE) {
-			outgoingSegment.setFIN(true);
+			out.setFIN(true);
 			send();
 			return State.LAST_ACK;
 		}
@@ -401,8 +407,8 @@ public class Tcb {
 				// TODO verify all sock info specified
 				
 				ISS = generateISS();
-				outgoingSegment.SEG_SEQ = ISS;
-				outgoingSegment.setSYN(true);
+				out.SEG_SEQ = ISS;
+				out.setSYN(true);
 				send();
 				SND_UNA = ISS;
 				SND_NXT = ISS + 1;
@@ -418,8 +424,8 @@ public class Tcb {
 				// TODO verify all sock info specified
 				// TODO need state for passive/active??
 				ISS = generateISS();
-				outgoingSegment.SEG_SEQ = ISS;
-				outgoingSegment.setSYN(true);
+				out.SEG_SEQ = ISS;
+				out.setSYN(true);
 				send();
 				SND_UNA = ISS;
 				SND_NXT = ISS + 1;
@@ -439,8 +445,8 @@ public class Tcb {
 		case LISTEN:
 			// TODO passive to active again
 			ISS = generateISS();
-			outgoingSegment.SEG_SEQ = ISS;
-			outgoingSegment.setSYN(true);
+			out.SEG_SEQ = ISS;
+			out.setSYN(true);
 			send();
 			SND_UNA = ISS;
 			SND_NXT = ISS + 1;
@@ -461,9 +467,9 @@ public class Tcb {
 			outgoingQueue.put(payload);
 			// TODO segmentize
 			// TODO piggy back ack???
-			outgoingSegment.SEG_ACK = RCV_NXT;
+			out.SEG_ACK = RCV_NXT;
 			// TODO set ack here??
-			outgoingSegment.setACK(true);
+			out.setACK(true);
 			break;
 		case CLOSING:
 		case FIN_WAIT1:
@@ -505,10 +511,543 @@ public class Tcb {
 		return 0;
 	}
 	
-	private int recv(ByteBuffer bb) {
-		return 0;
+	public void eventClose() throws TcbException, IOException {
+		switch (currentState) {
+		case CLOSED:
+			// TODO check permission
+			throw new TcbException("connection does not exist");
+		case LISTEN:
+			// TODO what is outstanding RECEIVEs
+			// TODO delete tcb
+			currentState = State.CLOSED;
+			break;
+		case SYN_SENT:
+			// TODO delete tcb
+			// TODO throw "closing" to queued send and receive??
+			break;
+		case SYN_RCVD:
+			if (outgoingQueue.isEmpty()) {
+				out.setFIN(true);
+				send();
+				currentState = State.FIN_WAIT1;
+			}
+			else {
+				// TODO queue for processing after establish??
+			}
+			break;
+		case ESTABLISHED:
+			if (outgoingQueue.isEmpty()) {
+				out.setFIN(true);
+				send();
+				currentState = State.FIN_WAIT1;
+			}
+			else {
+				// TODO queue a fin
+			}
+			currentState = State.FIN_WAIT1;
+			break;
+		case FIN_WAIT1:
+		case FIN_WAIT2:
+			throw new TcbException("connection closing");
+		case CLOSE_WAIT:
+			if (outgoingQueue.isEmpty()) {
+				out.setFIN(true);
+				send();
+				currentState = State.CLOSING;
+			}
+			else {
+				// TODO queue a fin and then enter CLOSING
+			}
+			break;
+		case CLOSING:
+		case LAST_ACK:
+		case TIME_WAIT:
+			throw new TcbException("connection closing");
+		}
+	}
+
+	public void eventAbort() throws TcbException, IOException {
+		switch (currentState) {
+		case CLOSED:
+			// TODO check user permission
+			throw new TcbException("connection does not exist");
+		case LISTEN:
+			// TODO delete tcb
+			currentState = State.CLOSED;
+			if (!incomingQueue.isEmpty()) {
+				// TODO is this what RFC wanted?
+				throw new TcbException("connection reset");
+			}
+			break;
+		case SYN_SENT:
+			// TODO delete tcb
+			currentState = State.CLOSED;
+			if (!incomingQueue.isEmpty() || !outgoingQueue.isEmpty()) {
+				// TODO is this what RFC wanted?
+				throw new TcbException("connection reset");
+			}
+			break;
+		case SYN_RCVD:
+		case ESTABLISHED:
+		case FIN_WAIT1:
+		case FIN_WAIT2:
+		case CLOSE_WAIT:
+			out.SEG_SEQ = SND_NXT;
+			out.setRST(true);
+			send();
+			if (!incomingQueue.isEmpty() || !outgoingQueue.isEmpty()) {
+				// TODO connection reset notification. Interrupt blocking calls
+				// TODO flush queued transmission??
+			}
+			// TODO wait for flush before deleting???
+			// TODO delete tcb
+			currentState = State.CLOSED;
+			break;
+		case CLOSING:
+		case LAST_ACK:
+		case TIME_WAIT:
+			// TODO respond with ok?!?!?
+			// TODO delete tcb
+			currentState = State.CLOSED;
+			break;
+		
+		}
 	}
 	
+	public String eventStatus() throws TcbException {
+		if (currentState == State.CLOSED) {
+			// TODO check permission. Since TCB goes under the same JVM. Maybe no need to check
+			throw new TcbException("connection does not exist");
+		}
+		else {
+			return currentState.toString();
+		}
+	}
+
+	public void eventSegmentArrives(IncomingSegment segment) throws IOException, InterruptedException {
+		if (currentState == State.CLOSED) {
+			if (segment.RST) {
+				// ignore
+			}
+			else {
+				if (!segment.ACK) {
+					out.SEG_SEQ = 0;
+					out.SEG_ACK = segment.SEG_SEQ + segment.dataLength;
+					out.setRST(true);
+					out.setACK(true);
+				}
+				else {
+					out.SEG_SEQ = segment.SEG_ACK;
+					out.setRST(true);
+				}
+				send();
+			}
+		}
+		else if (currentState == State.LISTEN) {
+			if (segment.RST) {
+				// ignore
+			}
+			else if (segment.ACK) {
+				out.SEG_SEQ = segment.SEG_ACK;
+				out.setRST(true);
+				send();
+			}
+			else if (segment.SYN) {
+				// TODO check security
+				// TODO check PRC
+				RCV_NXT = segment.SEG_SEQ + 1;
+				IRS = segment.SEG_SEQ;
+				ByteBuffer bb = segment.getByteBuffer();
+				bb.position(segment.getDataOffset());
+				incomingQueue.put(bb);
+				ISS = generateISS();
+				
+				out.SEG_SEQ = ISS;
+				out.SEG_ACK = RCV_NXT;
+				out.setSYN(true);
+				out.setACK(true);
+				send();
+				SND_NXT = ISS + 1;
+				SND_UNA = ISS;
+				currentState = State.SYN_RCVD;
+
+				// TODO continue here...
+				
+				// TODO but the processing of syn/ack should not be repeated...
+				
+				// TODO if foreign socket not set
+				foreignSocket.setAddress(segment.getIp().getSourceAddress());
+				foreignSocket.setPort(segment.getSrcPort());
+			}
+			else {
+				// Drop the segment
+			}
+		}
+		else if (currentState == State.SYN_SENT) {
+			boolean isAckOK = false;
+			if (segment.ACK) {
+				if (segment.SEG_ACK <= ISS || segment.SEG_ACK > SND_NXT) {
+					if (!segment.RST) {
+						out.SEG_SEQ = segment.SEG_ACK;
+						out.setRST(true);
+						send();
+						return;
+					}
+				}
+				else if (SND_UNA <= segment.SEG_ACK && segment.SEG_ACK <= SND_NXT) {
+					isAckOK = true;
+				}
+			}
+			if (segment.RST) {
+				if (isAckOK) {
+					// TODO signal connection reset
+					currentState = State.CLOSED;
+					// TODO delete TCB
+				}
+				return;
+			}
+			// TODO check security and precedence
+			else if (segment.SYN) {
+				RCV_NXT = segment.SEG_SEQ + 1;
+				IRS = segment.SEG_SEQ;
+				if (isAckOK) {
+					SND_UNA = segment.SEG_ACK;
+					// TODO clear retransmission queue
+				}
+				if (SND_UNA > ISS) {
+					currentState = State.ESTABLISHED;
+					out.SEG_SEQ = SND_NXT;
+					out.SEG_ACK = RCV_NXT;
+					out.setACK(true);
+					send();
+					
+					// TODO may include data???
+					
+					if (segment.getDataLength() == 0) {
+						return;
+					}
+					
+					// TODO go to sixth step (check URG)
+				}
+				else {
+					currentState = State.SYN_RCVD;
+					out.SEG_SEQ = ISS;
+					out.SEG_ACK = RCV_NXT;
+					out.setSYN(true);
+					out.setACK(true);
+					send();
+					
+					if (segment.getDataLength() > 0) {
+						// TODO queue for processing after ESTABLISH
+					}
+					return;
+				}
+			}
+			else if (!segment.SYN && !segment.RST) {
+				// fifth
+				// Drop segment
+				return;
+			}
+		}
+		else {
+			// first check seq
+			switch (currentState) {
+			case SYN_RCVD:
+			case ESTABLISHED:
+			case FIN_WAIT1:
+			case FIN_WAIT2:
+			case CLOSE_WAIT:
+			case LAST_ACK:
+			case TIME_WAIT:
+				// TODO check parts straddle??
+				
+				// Test acceptance
+				boolean acceptable = false;
+				if (segment.getDataLength() == 0) {
+					if (RCV_WND == 0) {
+						if (segment.SEG_SEQ == RCV_NXT) {
+							acceptable = true;
+						}
+					}
+					else if (RCV_WND > 0){
+						if (RCV_NXT <= segment.SEG_SEQ) {
+							acceptable = true;
+						}
+					}
+				}
+				else if (segment.getDataLength() > 0){
+					// RCV_WND 0 not acceptable
+					
+					if (RCV_WND > 0) {
+						if ((RCV_NXT <= segment.SEG_SEQ && segment.SEG_SEQ < (RCV_NXT + RCV_WND)) ||
+							(RCV_NXT <= (segment.SEG_SEQ + segment.getDataLength() - 1) && (segment.SEG_SEQ + segment.getDataLength() - 1) < (RCV_NXT + RCV_WND))
+							) {
+							acceptable = true;
+						}
+					}
+				}
+				
+				// TODO RCV_WND 0 special allowance
+				
+				if (!acceptable) {
+					if (!segment.RST) {
+						out.SEG_SEQ = SND_NXT;
+						out.SEG_ACK = RCV_NXT;
+						out.setACK(true);
+						send();
+					}
+					// drop and return
+					return;
+				}
+				
+				// TODO trimming off? higher seq for later processing??
+				
+			}
+			
+			// second check the RST bit
+			switch (currentState) {
+			case SYN_RCVD:
+				if (segment.RST) {
+					// TODO passive open should return to LISTEN state??? Was it not accepted???
+					// TODO active open should CLOSED, delete tcb and return
+					return;
+				}
+				break;
+			case ESTABLISHED:
+			case FIN_WAIT1:
+			case FIN_WAIT2:
+			case CLOSE_WAIT:
+				if (segment.RST) {
+					// TODO RECV/SEND reset
+					// TODO notify user "connection reset"
+					currentState = State.CLOSED;
+					// TODO delete tcb
+					return;
+				}
+				break;
+			case CLOSING:
+			case LAST_ACK:
+			case TIME_WAIT:
+				if (segment.RST) {
+					currentState = State.CLOSED;
+					// TODO delete tcb
+					return;
+				}
+			}
+			
+			// third check security and precedence
+			// TODO check security and precedence
+			
+			// fourth check the SYN bit
+			switch (currentState) {
+			case SYN_RCVD:
+			case ESTABLISHED:
+			case FIN_WAIT1:
+			case FIN_WAIT2:
+			case CLOSE_WAIT:
+			case CLOSING:
+			case LAST_ACK:
+			case TIME_WAIT:
+				// TODO SYN in window??
+				// TODO SYN not in window??
+			}
+			
+			// fifth check the ACK field
+			if (!segment.ACK) {
+				// drop
+				return;
+			}
+			else {
+				switch (currentState) {
+				case SYN_RCVD:
+					if (SND_UNA <= segment.SEG_ACK && segment.SEG_ACK <= SND_NXT) {
+						currentState = State.ESTABLISHED;
+						// TODO continue processing??
+					}
+					else {
+						// TODO does this mean ACK not acceptable??
+						out.SEG_SEQ = segment.SEG_ACK;
+						out.setRST(true);
+						send();
+						
+						// TODO continue?? it didn't say. But I think it should stop
+						return;
+					}
+				case ESTABLISHED:
+					if (SND_UNA < segment.SEG_ACK && segment.SEG_ACK <= SND_NXT) {
+						SND_UNA = segment.SEG_ACK;
+						// TODO clear ack segments in retx queue
+						// TODO notify user??
+						// TODO dup ACK??
+						// TODO All seq check should use method to allow wrap or negative compare
+						if (segment.SEG_ACK > SND_NXT) {
+							// TODO not setting seq or ack???
+							out.setACK(true);
+							send();
+							// drop
+							return;
+						}
+
+						if (SND_UNA < segment.SEG_ACK && segment.SEG_ACK <= SND_NXT) {
+							// TODO this is the same condition, maybe it should move to the block above
+							// TODO update send window
+							if (SND_WL1 < segment.SEG_SEQ ||
+									(SND_WL1 == segment.SEG_SEQ && SND_WL2 <= segment.SEG_ACK)) {
+								SND_WND = segment.SEG_WND;
+								SND_WL1 = segment.SEG_SEQ;
+								SND_WL2 = segment.SEG_ACK;
+							}
+						}
+					}
+					// TODO return or not? RFC didn't say!!!
+					break;
+				case FIN_WAIT1:
+					// TODO if FIN is now acked, enter FIN_WAIT2???
+					break;
+				case FIN_WAIT2:
+					// TODO not sure what the RFC says
+					// TODO if retx queue empty, close can be acked ok???
+					break;
+				case CLOSE_WAIT:
+					// TODO same as establish state
+					break;
+				case CLOSING:
+					// TODO if FIN is acked??? enter TIME_WAIT
+					break;
+				case LAST_ACK:
+					// TODO if FIN is acked, delete tcb, enter closed state, return
+					break;
+				case TIME_WAIT:
+					// TODO only retx of remote FIN should come here. ack it and restart 2 MSL timeout
+					break;
+				}
+			}
+			
+			// sixth, check the URG bit
+			switch (currentState) {
+			case ESTABLISHED:
+			case FIN_WAIT1:
+			case FIN_WAIT2:
+				if (segment.URG) {
+					// TODO what is SEG.UP??
+					// TODO signal user
+				}
+				break;
+			case CLOSE_WAIT:
+			case CLOSING:
+			case LAST_ACK:
+			case TIME_WAIT:
+				// TODO should not occur. Ignore. But why say it, what about the unmentioned states?
+				break;
+			}
+			
+			// seventh, process the segment text
+			switch (currentState) {
+			case ESTABLISHED:
+			case FIN_WAIT1:
+			case FIN_WAIT2:
+				// TODO queue segment text
+				// TODO signal user if PSH is set
+				// TODO update RCV_NXT
+				// TODO update RCV_WND
+				// TODO window management, section 3.7
+				
+				// TODO send ack should piggyback data
+				out.SEG_SEQ = SND_NXT;
+				out.SEG_ACK = RCV_NXT;
+				out.setACK(true);
+				send();
+				break;
+			case CLOSE_WAIT:
+			case CLOSING:
+			case LAST_ACK:
+			case TIME_WAIT:
+				// TODO this should not occur, since a FIN has been received. What the?
+				break;
+			}
+			
+			// eighth, check the FIN bit
+			if (segment.FIN) {
+				switch (currentState) {
+				case CLOSED:
+				case LISTEN:
+				case SYN_SENT:
+					// drop and return
+					return;
+				}
+				
+				// TODO signal user "connection closing"
+				// TODO reutnr pending RECEIVEs
+				// TODO advance RCV_NXT over FIN
+				// TODO send ack for FIN
+				// TODO FIN implies PUSH
+				switch (currentState) {
+				case SYN_RCVD:
+				case ESTABLISHED:
+					currentState = State.CLOSE_WAIT;
+					break;
+				case FIN_WAIT1:
+					// TODO if FIN is acked, enter TIME_WAIT
+					// TODO otherwise CLOSING state
+					break;
+				case FIN_WAIT2:
+					currentState = State.TIME_WAIT;
+					// TODO start time-wait timer, off other timers
+					break;
+				case CLOSE_WAIT:
+					// Remain CLOSE_WAIT
+					break;
+				case CLOSING:
+					// Remain CLOSING
+					break;
+				case LAST_ACK:
+					// Remain LAST_ACK
+					break;
+				case TIME_WAIT:
+					// Remain TIME_WAIT
+					// TODO restart 2 MSL time-wait timeout
+					break;
+				}
+			}
+		}
+	}
+	
+	public void eventTimeout() {
+		// TODO what is user timeout
+		// TODO handle retx timeout
+		// TODO handle time-wait timeout
+	}
+
+	// TODO testing events. any event
+	private class Change {
+		boolean read = false;
+		boolean write = false;
+	}
+	
+	private Change change = new Change();
+	
+	public void select() throws InterruptedException {
+		synchronized (change) {
+			while (!change.read && !change.write) {
+				change.wait();
+			}
+		}
+	}
+	
+	private void notifyRead() {
+		synchronized (change) {
+			change.read = true;
+			change.notify();
+		}
+	}
+
+	private void notifyWrite() {
+		synchronized (change) {
+			change.write = true;
+			change.notify();
+		}
+	}
+
 	public void process(Event event, TcpPacket tcp) throws IOException {
 		Dump.dumpIndent();
 		Dump.dump("Tcb processing: tcb=" + this + " currentState=" + currentState + " event=" + event);

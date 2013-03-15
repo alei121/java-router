@@ -1,6 +1,7 @@
 package code.messy.net.ip.tcp;
 
 import java.nio.ByteBuffer;
+import java.util.Iterator;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
@@ -36,6 +37,15 @@ public class ByteBufferQueue {
 			if (head.hasRemaining()) return false;
 		}
 		return true;
+	}
+	
+	public int size() {
+		int size = 0;
+		if (head != null) size += head.remaining();
+		for (ByteBuffer buffer : queue) {
+			size += buffer.remaining();
+		}
+		return size;
 	}
 	
 	public void put(ByteBuffer bb) throws InterruptedException {

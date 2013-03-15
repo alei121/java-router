@@ -19,7 +19,7 @@ public class IncomingSegment implements Packet {
     // RFC Section 3.2 Current segment variable
     int SEG_SEQ;
     int SEG_ACK;
-    int SEG_LEN;
+    int dataLength;
     int SEG_WND;
     int SEG_UP;
     int SEG_PRC;
@@ -34,10 +34,6 @@ public class IncomingSegment implements Packet {
     int dataOffset;
     
     final static int maxDataLength = 2048;
-    
-    public IncomingSegment() {
-    	// TODO Try build or extract directly from BB
-    }
     
     public IncomingSegment(IpPacket ip) {
         this.ip = ip;
@@ -63,7 +59,7 @@ public class IncomingSegment implements Packet {
         checksum = bb.getShort(headerOffset + 16);
         urgentPointer = bb.getShort(headerOffset + 18);
         
-        SEG_LEN = ip.getDataLength() - dataOffset;
+        dataLength = ip.getDataLength() - dataOffset;
         dataOffset += headerOffset;
     }
 
@@ -96,7 +92,7 @@ public class IncomingSegment implements Packet {
 
     @Override
     public int getDataLength() {
-        return SEG_LEN;
+        return dataLength;
     }
 
     @Override
@@ -129,7 +125,7 @@ public class IncomingSegment implements Packet {
     	sb.append(",urgentPointer=" + urgentPointer);
     	sb.append(",headerOffset=" + headerOffset);
     	sb.append(",dataOffset=" + dataOffset);
-    	sb.append(",dataLength=" + SEG_LEN);
+    	sb.append(",dataLength=" + dataLength);
     	return sb.toString();
     }
 

@@ -56,11 +56,11 @@ public class TupleMap<E> {
     }
 
     public void add(Tuple tuple, E e) {
-        add(tuple.srcAddress, tuple.dstAddress, tuple.srcPort, tuple.dstPort, e);
+        add(tuple.getSrcAddress(), tuple.getDstAddress(), tuple.getSrcPort(), tuple.getDstPort(), e);
     }
 
     public E get(Tuple tuple) {
-    	return get(tuple.srcAddress, tuple.dstAddress, tuple.srcPort, tuple.dstPort);
+        return get(tuple.getSrcAddress(), tuple.getDstAddress(), tuple.getSrcPort(), tuple.getDstPort());
     }
     
     public E get(InetAddress srcAddress, InetAddress dstAddress, int srcPort,

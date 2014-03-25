@@ -5,23 +5,23 @@ package code.messy.net.ip;
 
 import java.net.InetAddress;
 
-import code.messy.Handler;
+import code.messy.Receiver;
 
-public class IpMulticastHandler implements Handler<IpPacket> {
-	Handler<IpPacket> multicast, other;
-    public IpMulticastHandler(Handler<IpPacket> multicast, Handler<IpPacket> other) {
+public class IpMulticastHandler implements Receiver<IpPacket> {
+	Receiver<IpPacket> multicast, other;
+    public IpMulticastHandler(Receiver<IpPacket> multicast, Receiver<IpPacket> other) {
         this.multicast = multicast;
         this.other = other;
     }
 
     @Override
-    public void handle(IpPacket ip) {
+    public void receive(IpPacket ip) {
         InetAddress dst = ip.getDestinationAddress();
         if (dst.isMulticastAddress()) {
-            multicast.handle(ip);
+            multicast.receive(ip);
         }
         else {
-            other.handle(ip);
+            other.receive(ip);
         }
     }
 

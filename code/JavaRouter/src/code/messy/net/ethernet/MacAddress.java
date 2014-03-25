@@ -9,9 +9,9 @@ import java.util.Arrays;
 import java.util.Formatter;
 
 public class MacAddress {
-    static MacAddress BROADCAST = new MacAddress((byte)0xFF, (byte)0xFF, (byte)0xFF,
+    static public MacAddress BROADCAST = new MacAddress((byte)0xFF, (byte)0xFF, (byte)0xFF,
             (byte)0xFF, (byte)0xFF, (byte)0xFF);
-    static MacAddress ZERO = new MacAddress((byte)0, (byte)0, (byte)0,
+    static public MacAddress ZERO = new MacAddress((byte)0, (byte)0, (byte)0,
             (byte)0, (byte)0, (byte)0);
 
     private byte[] address = new byte[6];
@@ -59,11 +59,12 @@ public class MacAddress {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         Formatter f = new Formatter(sb);
-        f.format("%02X", address[0] & 0xFF);
+        f.format("%02x", address[0] & 0xFF);
         for (int i = 1; i < address.length; i++) {
-            sb.append('.');
-            f.format("%02X", address[i] & 0xFF);
+            sb.append(':');
+            f.format("%02x", address[i] & 0xFF);
         }
+        f.close();
         return sb.toString();
     }
     

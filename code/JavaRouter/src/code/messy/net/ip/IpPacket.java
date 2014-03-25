@@ -14,7 +14,8 @@ import code.messy.net.ip.route.RoutingTable;
 import code.messy.net.ip.route.Subnet;
 
 public class IpPacket implements Packet {
-    Packet packet;
+    private Packet packet;
+    private IpLinkSupport ipSupport;
 
     private InetAddress sourceAddress;
     private InetAddress destinationAddress;
@@ -27,8 +28,9 @@ public class IpPacket implements Packet {
     private byte protocol;
     
 
-    public IpPacket(Packet packet) {
+    public IpPacket(Packet packet, IpLinkSupport ipSupport) {
         this.packet = packet;
+        this.ipSupport = ipSupport;
         
         headerOffset = packet.getDataOffset();
         ByteBuffer bb = packet.getByteBuffer();
@@ -195,4 +197,8 @@ public class IpPacket implements Packet {
     public long getTimestamp() {
         return packet.getTimestamp();
     }
+
+    public IpLinkSupport getIpSupport() {
+		return ipSupport;
+	}
 }

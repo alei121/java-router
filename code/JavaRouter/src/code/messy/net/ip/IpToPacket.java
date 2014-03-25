@@ -3,19 +3,19 @@
  */
 package code.messy.net.ip;
 
-import code.messy.Handler;
+import code.messy.Receiver;
 import code.messy.net.Packet;
 
-public class IpToPacket implements Handler<IpPacket> {
-    Handler<Packet> ph;
+public class IpToPacket implements Receiver<IpPacket> {
+    Receiver<Packet> ph;
 
-    public IpToPacket(Handler<Packet> ph) {
+    public IpToPacket(Receiver<Packet> ph) {
         this.ph = ph;
     }
 
     @Override
-    public void handle(IpPacket ip) {
-        ph.handle(ip.getPacket());
+    public void receive(IpPacket ip) {
+        ph.receive(ip.getPacket());
     }
 
 }

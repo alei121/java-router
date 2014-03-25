@@ -2,17 +2,17 @@ package code.messy.net.ip.tcp;
 
 import java.io.IOException;
 
-import code.messy.Handler;
+import code.messy.Receiver;
 import code.messy.net.Dump;
 import code.messy.net.ip.TupleMap;
 
-public class TcbSessionHandler implements Handler<TcpPacket> {
-	TupleMap<Handler<TcpPacket>> map = new TupleMap<Handler<TcpPacket>>();
+public class TcbSessionHandler implements Receiver<TcpPacket> {
+	TupleMap<Receiver<TcpPacket>> map = new TupleMap<Receiver<TcpPacket>>();
 
 	@Override
-	public void handle(TcpPacket packet) {
+	public void receive(TcpPacket packet) {
 		try {
-			Handler<TcpPacket> handler = map.get(packet.getTuple());
+			Receiver<TcpPacket> handler = map.get(packet.getTuple());
 			if (handler == null) {
 				Dump.dump("null handler. tuple=" + packet.getTuple());
 				Tcb tcb;
@@ -20,14 +20,14 @@ public class TcbSessionHandler implements Handler<TcpPacket> {
 				handler = new TcbHandler(tcb);
 				map.add(packet.getTuple(), handler);
 			}
-			handler.handle(packet);
+			handler.receive(packet);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	
-	class TcbHandler implements Handler<TcpPacket> {
+	class TcbHandler implements Receiver<TcpPacket> {
 		Tcb tcb;
 		
 		public TcbHandler(Tcb tcb) {
@@ -35,7 +35,7 @@ public class TcbSessionHandler implements Handler<TcpPacket> {
 		}
 		
 		@Override
-		public void handle(TcpPacket packet) {
+		public void receive(TcpPacket packet) {
 			try {
 				tcb.process(Tcb.Event.SEGMENT_ARRIVES, packet);
 			} catch (IOException e) {

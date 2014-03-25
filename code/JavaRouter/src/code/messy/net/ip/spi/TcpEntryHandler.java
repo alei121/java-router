@@ -3,13 +3,13 @@ package code.messy.net.ip.spi;
 import java.util.HashMap;
 import java.util.Set;
 
-import code.messy.Handler;
+import code.messy.Receiver;
 import code.messy.net.ip.Tuple;
 import code.messy.net.ip.tcp.Tcb;
 import code.messy.net.ip.tcp.TcpPacket;
 import code.messy.net.ip.tcp.TupleMatcher;
 
-public class TcpEntryHandler implements Handler<TcpPacket> {
+public class TcpEntryHandler implements Receiver<TcpPacket> {
 	private static TcpEntryHandler instance = new TcpEntryHandler();
 
 	private HashMap<Tuple, SocketHandler> mapOfTupleToSocketHandler = new HashMap<Tuple, SocketHandler>();
@@ -30,36 +30,36 @@ public class TcpEntryHandler implements Handler<TcpPacket> {
 	}
 	
 	Tcb tcb = null;
-    private HashMap<TupleMatcher, Handler<TcpPacket>> map = new HashMap<TupleMatcher, Handler<TcpPacket>>();
-    private Handler<TcpPacket> defaultHandler = null;
+    private HashMap<TupleMatcher, Receiver<TcpPacket>> map = new HashMap<TupleMatcher, Receiver<TcpPacket>>();
+    private Receiver<TcpPacket> defaultHandler = null;
     
 	@Override
-	public void handle(TcpPacket packet) {
+	public void receive(TcpPacket packet) {
 		SocketHandler handler = mapOfTupleToSocketHandler.get(packet.getTuple());
 		if (handler != null) {
-			handler.handle(packet);
+			handler.receive(packet);
 		}
 		else {
 			// TODO revise this for ServerSocketHandler
 			Set<TupleMatcher> matchers = map.keySet();
 			for (TupleMatcher matcher : matchers) {
 				if (matcher.match(packet.getTuple())) {
-					Handler<TcpPacket> tcpHandler = map.get(matcher);
-					tcpHandler.handle(packet);
+					Receiver<TcpPacket> tcpHandler = map.get(matcher);
+					tcpHandler.receive(packet);
 					return;
 				}
 			}
 		}
 		if (defaultHandler != null) {
-			defaultHandler.handle(packet);
+			defaultHandler.receive(packet);
 		}
 	}
 
-	public void register(Handler<TcpPacket> handler) {
+	public void register(Receiver<TcpPacket> handler) {
 		defaultHandler = handler;
 	}
 	
-	public void register(TupleMatcher matcher, Handler<TcpPacket> handler) {
+	public void register(TupleMatcher matcher, Receiver<TcpPacket> handler) {
 		map.put(matcher, handler);
 	}
 }

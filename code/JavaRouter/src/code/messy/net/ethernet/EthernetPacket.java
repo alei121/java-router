@@ -72,4 +72,10 @@ public class EthernetPacket implements Packet {
 	public Ethertype getEthertype() {
 		return ethertype;
 	}
+	
+    @Override
+    public String toString() {
+        return "[EthernetPacket port=" + port + " src=" + sourceAddress + " dst=" + destinationAddress + "]";
+    }
+
 }

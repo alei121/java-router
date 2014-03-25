@@ -10,12 +10,11 @@ import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 
-import code.messy.Handler;
+import code.messy.Receiver;
 import code.messy.net.Dump;
-import code.messy.net.Packet;
 import code.messy.net.ip.route.LocalSubnet;
 
-public class ArpHandler implements Handler<Packet> {
+public class ArpHandler implements Receiver<EthernetPacket> {
 
     static HashMap<InetAddress, MacAddress> map = new HashMap<InetAddress, MacAddress>();
 
@@ -61,7 +60,7 @@ public class ArpHandler implements Handler<Packet> {
     }
 
     @Override
-    public void handle(Packet packet) {
+    public void receive(EthernetPacket packet) {
         Dump.dumpIndent();
         ByteBuffer bb = packet.getByteBuffer();
         int offset = packet.getDataOffset();

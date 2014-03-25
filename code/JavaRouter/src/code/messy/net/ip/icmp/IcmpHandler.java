@@ -7,15 +7,15 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
-import code.messy.Handler;
+import code.messy.Receiver;
 import code.messy.net.Dump;
 import code.messy.net.ip.IpHeader;
 import code.messy.net.ip.IpPacket;
 import code.messy.net.ip.route.LocalSubnet;
 
-public class IcmpHandler implements Handler<IpPacket> {
+public class IcmpHandler implements Receiver<IpPacket> {
     @Override
-    public void handle(IpPacket ip) {
+    public void receive(IpPacket ip) {
         Dump.dumpIndent();
         
         ByteBuffer bb = ip.getByteBuffer();

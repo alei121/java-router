@@ -7,14 +7,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import code.messy.Handler;
-import code.messy.net.Packet;
+import code.messy.Receiver;
 import code.messy.net.Port;
 import code.messy.net.ethernet.EthernetPacket;
 import code.messy.net.ethernet.EthernetPort;
 import code.messy.net.ethernet.MacAddress;
 
-public class Bridge implements Handler<Packet> {
+public class Bridge implements Receiver<EthernetPacket> {
     List<EthernetPort> ports = new ArrayList<EthernetPort>();
     LearnedMac learnedMac = new LearnedMac();
     String name;
@@ -35,7 +34,7 @@ public class Bridge implements Handler<Packet> {
     }
 
 	@Override
-	public void handle(Packet packet) {
+	public void receive(EthernetPacket packet) {
         try {
         	EthernetPacket ep = (EthernetPacket)packet;
             MacAddress dstMac = ep.getDestinationAddress();

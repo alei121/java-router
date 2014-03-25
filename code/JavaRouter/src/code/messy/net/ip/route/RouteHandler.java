@@ -6,12 +6,12 @@ package code.messy.net.ip.route;
 import java.io.IOException;
 import java.net.InetAddress;
 
-import code.messy.Handler;
+import code.messy.Receiver;
 import code.messy.net.ip.IpPacket;
 
-public class RouteHandler implements Handler<IpPacket> {
+public class RouteHandler implements Receiver<IpPacket> {
     @Override
-    public void handle(IpPacket ip) {
+    public void receive(IpPacket ip) {
         InetAddress dst = ip.getDestinationAddress();
         Subnet subnet = RoutingTable.getInstance().getSubnetByMasking(dst);
         if (subnet != null) {

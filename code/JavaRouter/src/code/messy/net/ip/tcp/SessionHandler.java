@@ -3,12 +3,12 @@ package code.messy.net.ip.tcp;
 import java.util.HashMap;
 import java.util.Set;
 
-import code.messy.Handler;
+import code.messy.Receiver;
 
 public class SessionHandler implements TcpPacketHandler {
 	Tcb tcb = null;
-    private HashMap<TupleMatcher, Handler<TcpPacket>> map = new HashMap<TupleMatcher, Handler<TcpPacket>>();
-    private Handler<TcpPacket> defaultHandler = null;
+    private HashMap<TupleMatcher, Receiver<TcpPacket>> map = new HashMap<TupleMatcher, Receiver<TcpPacket>>();
+    private Receiver<TcpPacket> defaultHandler = null;
 	
 
 	@Override
@@ -16,21 +16,21 @@ public class SessionHandler implements TcpPacketHandler {
 		Set<TupleMatcher> matchers = map.keySet();
 		for (TupleMatcher matcher : matchers) {
 			if (matcher.match(packet.getTuple())) {
-				Handler<TcpPacket> handler = map.get(matcher);
-				handler.handle(packet);
+				Receiver<TcpPacket> handler = map.get(matcher);
+				handler.receive(packet);
 				return;
 			}
 		}
 		if (defaultHandler != null) {
-			defaultHandler.handle(packet);
+			defaultHandler.receive(packet);
 		}
 	}
 	
-	public void register(Handler<TcpPacket> handler) {
+	public void register(Receiver<TcpPacket> handler) {
 		defaultHandler = handler;
 	}
 	
-	public void register(TupleMatcher matcher, Handler<TcpPacket> handler) {
+	public void register(TupleMatcher matcher, Receiver<TcpPacket> handler) {
 		map.put(matcher, handler);
 	}
 }

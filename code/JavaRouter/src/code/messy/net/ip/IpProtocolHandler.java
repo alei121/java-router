@@ -5,29 +5,29 @@ package code.messy.net.ip;
 
 import java.util.HashMap;
 
-import code.messy.Handler;
+import code.messy.Receiver;
 import code.messy.Registrable;
 import code.messy.net.ip.IpPacket.Protocol;
 
-public class IpProtocolHandler implements Registrable<IpPacket.Protocol, Handler<IpPacket>>, Handler<IpPacket> {
-    HashMap<Byte, Handler<IpPacket>> map = new HashMap<Byte, Handler<IpPacket>>();
+public class IpProtocolHandler implements Registrable<IpPacket.Protocol, Receiver<IpPacket>>, Receiver<IpPacket> {
+    HashMap<Byte, Receiver<IpPacket>> map = new HashMap<Byte, Receiver<IpPacket>>();
 
     @Override
-    public void handle(IpPacket packet) {
+    public void receive(IpPacket packet) {
         Byte protocol = packet.getProtocol();
-        Handler<IpPacket> ph = map.get(protocol);
+        Receiver<IpPacket> ph = map.get(protocol);
         if (ph != null) {
-            ph.handle(packet);
+            ph.receive(packet);
         }
     }
 
 	@Override
-	public void register(Protocol type, Handler<IpPacket> handler) {
+	public void register(Protocol type, Receiver<IpPacket> handler) {
         map.put(type.getValue(), handler);
 	}
 
 	@Override
-	public void register(Handler<IpPacket> handler) {
+	public void register(Receiver<IpPacket> handler) {
 		// TODO Auto-generated method stub
 		
 	}

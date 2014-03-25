@@ -4,15 +4,15 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
-import code.messy.Handler;
+import code.messy.Receiver;
 import code.messy.net.Dump;
-import code.messy.net.ethernet.EthernetPort;
 import code.messy.net.ip.IpHeader;
+import code.messy.net.ip.IpLinkSupport;
 import code.messy.net.ip.IpPacket;
 
-public class UnknownSessionHandler implements Handler<TcpPacket> {
+public class UnknownSessionHandler implements Receiver<TcpPacket> {
 	@Override
-	public void handle(TcpPacket tcp) {
+	public void receive(TcpPacket tcp) {
         Dump.dumpIndent();
 
 		try {
@@ -33,7 +33,7 @@ public class UnknownSessionHandler implements Handler<TcpPacket> {
             bbs[0] = IpHeader.create(src, dst, IpPacket.Protocol.TCP, bbs);
             
             // TODO not always ethernet
-            EthernetPort port = (EthernetPort)tcp.getPort();
+            IpLinkSupport port = tcp.getIp().getIpSupport();
             
             port.send(src, dst, bbs);
 		} catch (IOException e) {

@@ -4,19 +4,16 @@
 package code.messy.net.ethernet;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 
-import code.messy.Handler;
+import code.messy.Receiver;
 import code.messy.Registrable;
-import code.messy.net.Dump;
 import code.messy.net.Packet;
 import code.messy.net.Port;
 import code.messy.net.RawSocket;
-import code.messy.net.ip.IpLinkSupport;
 
-public class EthernetPort extends Thread implements Port, IpLinkSupport, Registrable<Ethertype, Handler<Packet>> {
+public class EthernetPort extends Thread implements Port, Registrable<Ethertype, Receiver<EthernetPacket>> {
     RawSocket socket;
     MacAddress mac;
     String port;
@@ -33,7 +30,7 @@ public class EthernetPort extends Thread implements Port, IpLinkSupport, Registr
 
     @Override
     public String toString() {
-        return "[port=" + port + ", mac=" + mac + "]";
+        return "[EthernetPort port=" + port + " mac=" + mac + "]";
     }
 
     
@@ -50,7 +47,7 @@ public class EthernetPort extends Thread implements Port, IpLinkSupport, Registr
     public void send(ByteBuffer bb) throws IOException {
         socket.write(bb);
     }
-
+/*
     @Override
     public void send(InetAddress src, InetAddress dst, ByteBuffer[] payload)
             throws IOException {
@@ -85,6 +82,7 @@ public class EthernetPort extends Thread implements Port, IpLinkSupport, Registr
         socket.write(bbs);
         Dump.dumpDedent();
     }
+    */
 
     public void send(MacAddress dstMac, Ethertype type, ByteBuffer[] payload) throws IOException {
         ByteBuffer header = ByteBuffer.allocateDirect(60);
@@ -101,17 +99,33 @@ public class EthernetPort extends Thread implements Port, IpLinkSupport, Registr
         socket.write(bbs);
     }
     
-    // TODO new code using publisher and handler
-    HashMap<Ethertype, Handler<Packet>> map = new HashMap<Ethertype, Handler<Packet>>();
-    Handler<Packet> defaultHandler = null;
+    public void send(MacAddress dstMac, Ethertype type, Packet packet) throws IOException {
+        ByteBuffer header = ByteBuffer.allocateDirect(60);
+        header.put(dstMac.getAddress());
+        header.put(mac.getAddress());
+        header.putShort(type.getValue());
+        header.flip();
 
+        ByteBuffer payload = packet.getByteBuffer();
+        payload.position(packet.getDataOffset());
+        
+        ByteBuffer bbs[] = new ByteBuffer[2];
+        bbs[0] = header;
+        bbs[1] = payload;
+        socket.write(bbs);
+    }
+    
+    // TODO new code using publisher and handler
+    HashMap<Ethertype, Receiver<EthernetPacket>> map = new HashMap<Ethertype, Receiver<EthernetPacket>>();
+    Receiver<EthernetPacket> defaultHandler = null;
+    
 	@Override
-	public void register(Ethertype type, Handler<Packet> handler) {
+	public void register(Ethertype type, Receiver<EthernetPacket> handler) {
         map.put(type, handler);
 	}
 
 	@Override
-	public void register(Handler<Packet> handler) {
+	public void register(Receiver<EthernetPacket> handler) {
 		defaultHandler = handler;
 	}
 
@@ -124,11 +138,11 @@ public class EthernetPort extends Thread implements Port, IpLinkSupport, Registr
                 bb.flip();
         		EthernetPacket ep = new EthernetPacket(bb, this);
 
-        		Handler<Packet> ph = map.get(ep.getEthertype());
+        		Receiver<EthernetPacket> ph = map.get(ep.getEthertype());
                 if (ph != null) {
-                    ph.handle(ep);
+                    ph.receive(ep);
                 } else if (defaultHandler != null) {
-                    defaultHandler.handle(ep);
+                    defaultHandler.receive(ep);
                 }
             }
         } catch (IOException e) {

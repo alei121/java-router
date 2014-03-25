@@ -26,7 +26,8 @@ deploy_lib_dir = os.path.join(root_dir, 'build', 'deploy', 'lib')
 # Jars for building
 env['JAVACLASSPATH'].append(os.path.join(deploy_lib_dir, 'RawSocket.jar'))
 env['JAVACLASSPATH'].append(os.path.join(deploy_lib_dir, 'JavaRouter.jar'))
-env['JAVACLASSPATH'].append(os.path.join(thirdparty_dir, 'jython2.5.2', 'jython.jar'))
+#env['JAVACLASSPATH'].append(os.path.join(thirdparty_dir, 'jython2.5.2', 'jython.jar'))
+env['JAVACLASSPATH'].append('/usr/share/java/*')
 
 # Java classes
 RawSocket_class_files = build_javac('RawSocket', env)

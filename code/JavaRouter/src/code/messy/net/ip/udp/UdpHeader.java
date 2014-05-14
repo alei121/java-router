@@ -1,7 +1,7 @@
 /*
  * Created on Sep 2, 2008
  */
-package code.messy.net.ip;
+package code.messy.net.ip.udp;
 
 import java.nio.ByteBuffer;
 

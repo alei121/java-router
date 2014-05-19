@@ -41,10 +41,13 @@ public class DhcpMessage {
 		if (magicCookie != 0x63825363) {
 			System.out.println("No magic");
 		}
-		
+
+		System.out.println("option now");
+
 		// options here
 		byte type;
 		while ((type = bb.get()) != 255) {
+			System.out.println("type=" + type);
 			// Skip padding
 			if (type != 0) {
 				byte len = bb.get();

@@ -46,7 +46,7 @@ public class DhcpMessage {
 
 		// options here
 		byte type;
-		while ((type = bb.get()) != 0xFF) {
+		while ((type = bb.get()) != -1) {
 			System.out.println("type=" + type);
 			// Skip padding
 			if (type != 0) {

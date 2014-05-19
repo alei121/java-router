@@ -1,5 +1,5 @@
 from code.messy.net.ethernet import Ethertype, ArpHandler
-from code.messy.net.ip import IpProtocolHandler
+from code.messy.net.ip import IpProtocolHandler, IpPacket
 from code.messy.net.ip.udp import UdpHandler
 from code.messy.net.ip.dhcp import DhcpHandler
 from code.messy.net.ip.route import LocalSubnet

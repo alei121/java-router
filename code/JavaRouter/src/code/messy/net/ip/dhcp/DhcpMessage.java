@@ -38,6 +38,9 @@ public class DhcpMessage {
 		bb.position(bb.position() + 192);
 		
 		int magicCookie = bb.getInt();
+		if (magicCookie != 0x63825363) {
+			System.out.println("No magic");
+		}
 		
 		// options here
 		byte type;

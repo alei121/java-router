@@ -9,25 +9,14 @@ import code.messy.net.ip.dhcp.option.OptionIF;
 
 public class DhcpMessage {
 	// RFC 2131
-	byte op;
-	byte htype;
-	byte hlen;
-	byte hops;
-	long xid;
+	byte op, htype, hlen, hops;
+	int xid;
 	short secs;
 	short flags;
-	long ciaddr, yiaddr, siaddr, giaddr;
+	int ciaddr, yiaddr, siaddr, giaddr;
 	byte chaddr[] = new byte[16];
 	String sname;
 	String file;
-	// options
-	
-	MessageType type;
-	
-	enum MessageType {
-		DISCOVER, OFFER, REQUEST, ACK, INFO, RELEASE
-	}
-	
 	List<OptionIF> options = new ArrayList<OptionIF>();
 	
 	public DhcpMessage(ByteBuffer bb) {
@@ -35,20 +24,20 @@ public class DhcpMessage {
 		htype = bb.get();
 		hlen = bb.get();
 		hops = bb.get();
-		xid = bb.getLong();
+		xid = bb.getInt();
 		secs = bb.getShort();
 		flags = bb.getShort();
-		ciaddr = bb.getLong();
-		yiaddr = bb.getLong();
-		siaddr = bb.getLong();
-		giaddr = bb.getLong();
+		ciaddr = bb.getInt();
+		yiaddr = bb.getInt();
+		siaddr = bb.getInt();
+		giaddr = bb.getInt();
 		bb.get(chaddr);
 		
 		// 192 octets zero padding for discovery.
 		// TODO how about other message types?
 		bb.position(bb.position() + 192);
 		
-		long magicCookie = bb.getLong();
+		int magicCookie = bb.getInt();
 		
 		// options here
 		byte type;

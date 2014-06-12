@@ -22,7 +22,7 @@ import code.messy.net.ip.route.RouteHandler;
 import code.messy.net.ip.route.RoutingTable;
 import code.messy.net.ip.udp.UdpHandler;
 
-public class Main {
+public class StaticRouting {
 
     /**
      * Syntax: java Main <portname> <ip> <prefix>

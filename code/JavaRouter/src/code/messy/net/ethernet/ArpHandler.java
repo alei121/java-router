@@ -11,8 +11,8 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 
 import code.messy.Receiver;
-import code.messy.net.Flow;
 import code.messy.net.ip.route.LocalSubnet;
+import code.messy.util.Flow;
 
 public class ArpHandler implements Receiver<EthernetPacket> {
 

@@ -7,8 +7,8 @@ import java.io.IOException;
 import java.net.InetAddress;
 
 import code.messy.Receiver;
-import code.messy.net.Flow;
 import code.messy.net.ip.IpPacket;
+import code.messy.util.Flow;
 
 public class RouteHandler implements Receiver<IpPacket> {
     @Override

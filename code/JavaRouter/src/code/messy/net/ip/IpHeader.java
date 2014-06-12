@@ -6,7 +6,7 @@ package code.messy.net.ip;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
-import code.messy.net.Flow;
+import code.messy.util.Flow;
 
 public class IpHeader {
     // special bytebuffer[] payload. it will skip null for "remain" calculation

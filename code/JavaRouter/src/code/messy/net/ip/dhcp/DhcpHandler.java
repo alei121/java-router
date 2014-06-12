@@ -6,7 +6,6 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-import code.messy.net.Flow;
 import code.messy.net.ip.IpHeader;
 import code.messy.net.ip.IpPacket;
 import code.messy.net.ip.NetworkNumber;
@@ -21,6 +20,7 @@ import code.messy.net.ip.route.LocalSubnet;
 import code.messy.net.ip.udp.UdpHeader;
 import code.messy.net.ip.udp.UdpPacket;
 import code.messy.net.ip.udp.UdpPacketHandler;
+import code.messy.util.Flow;
 import code.messy.util.IpAddressHelper;
 
 public class DhcpHandler implements UdpPacketHandler {

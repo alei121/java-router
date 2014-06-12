@@ -7,9 +7,9 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
-import code.messy.net.Flow;
 import code.messy.net.ip.IpPacket;
 import code.messy.net.ip.NetworkNumber;
+import code.messy.util.Flow;
 
 public class RemoteSubnet implements Subnet {
     private NetworkNumber network;

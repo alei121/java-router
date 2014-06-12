@@ -5,7 +5,7 @@ package code.messy.net.ip.udp;
 
 import java.nio.ByteBuffer;
 
-import code.messy.net.Flow;
+import code.messy.util.Flow;
 
 public class UdpHeader {
     static public ByteBuffer create(int src, int dst, ByteBuffer[] payload) {

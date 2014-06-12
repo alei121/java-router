@@ -7,10 +7,10 @@ import java.net.InetAddress;
 import java.util.Collection;
 import java.util.HashMap;
 
-import code.messy.net.Flow;
 import code.messy.net.Port;
 import code.messy.net.ip.NetworkNumber;
 import code.messy.net.ip.route.RoutingTable;
+import code.messy.util.Flow;
 
 public class RipTable {
     HashMap<NetworkNumber, RipEntry> map = new HashMap<NetworkNumber, RipEntry>();

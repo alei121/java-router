@@ -11,11 +11,11 @@ import java.util.HashMap;
 import java.util.List;
 
 import code.messy.Receiver;
-import code.messy.net.Flow;
 import code.messy.net.Packet;
 import code.messy.net.ip.IpLinkSupport;
 import code.messy.net.ip.IpPacket;
 import code.messy.net.ip.NetworkNumber;
+import code.messy.util.Flow;
 
 public class LocalSubnet implements Subnet {
     static List<LocalSubnet> directs = new ArrayList<LocalSubnet>();

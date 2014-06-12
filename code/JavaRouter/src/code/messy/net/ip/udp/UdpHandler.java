@@ -7,9 +7,9 @@ import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
 import code.messy.Receiver;
-import code.messy.net.Flow;
 import code.messy.net.ip.IpPacket;
 import code.messy.net.ip.TupleMap;
+import code.messy.util.Flow;
 
 public class UdpHandler implements Receiver<IpPacket> {
     static public void send(InetAddress dstAddress, int dstPort,

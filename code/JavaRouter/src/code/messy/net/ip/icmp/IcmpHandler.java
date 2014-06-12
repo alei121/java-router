@@ -8,10 +8,10 @@ import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
 import code.messy.Receiver;
-import code.messy.net.Flow;
 import code.messy.net.ip.IpHeader;
 import code.messy.net.ip.IpPacket;
 import code.messy.net.ip.route.LocalSubnet;
+import code.messy.util.Flow;
 
 public class IcmpHandler implements Receiver<IpPacket> {
     @Override

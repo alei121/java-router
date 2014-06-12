@@ -9,10 +9,10 @@ import java.util.HashMap;
 
 import code.messy.Receiver;
 import code.messy.Registrable;
-import code.messy.net.Flow;
 import code.messy.net.Packet;
 import code.messy.net.Port;
 import code.messy.net.RawSocket;
+import code.messy.util.Flow;
 
 public class EthernetPort extends Thread implements Port, Registrable<Ethertype, Receiver<EthernetPacket>> {
     RawSocket socket;

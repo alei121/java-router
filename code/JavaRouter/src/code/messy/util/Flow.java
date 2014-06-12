@@ -1,7 +1,7 @@
 /*
  * Created on Apr 24, 2008
  */
-package code.messy.net;
+package code.messy.util;
 
 
 public class Flow {

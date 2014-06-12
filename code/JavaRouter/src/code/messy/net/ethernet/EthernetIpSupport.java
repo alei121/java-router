@@ -5,9 +5,9 @@ import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
 import code.messy.Receiver;
-import code.messy.net.Flow;
 import code.messy.net.ip.IpLinkSupport;
 import code.messy.net.ip.IpPacket;
+import code.messy.util.Flow;
 import code.messy.util.IpAddressHelper;
 
 public class EthernetIpSupport implements IpLinkSupport {

@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import code.messy.Receiver;
-import code.messy.net.Dump;
+import code.messy.net.Flow;
 import code.messy.net.Packet;
 import code.messy.net.ip.IpLinkSupport;
 import code.messy.net.ip.IpPacket;
@@ -56,18 +56,17 @@ public class LocalSubnet implements Subnet {
     
     @Override
     public void forward(IpPacket ip) throws IOException {
-        Dump.dumpIndent();
         InetAddress dst = ip.getDestinationAddress();
 
         if (addressSubnetMap.containsKey(dst)) {
-            Dump.dump("DirectSubnet: locally addressed. packet=" + ip);
+            Flow.trace("LocalSubnet: locally addressed. packet=" + ip);
             if (localHandler != null) {
                 localHandler.receive(ip);
             } else {
-                Dump.dump("SubnetLocal: No local handle");
+                Flow.trace("LocalSubnet: No local handle");
             }
         } else {
-            Dump.dump("DirectSubnet: forward " + dst + " packet=" + ip);
+            Flow.trace("LocalSubnet.forward dst=" + dst + " packet=" + ip);
 
             Packet packet = ip.getPacket();
             packet.getByteBuffer().position(packet.getDataOffset());
@@ -77,16 +76,11 @@ public class LocalSubnet implements Subnet {
             link.send(dst, ip);
 //            link.send(src, dst, bbs);
         }
-        Dump.dumpDedent();
     }
 
     public void forward(InetAddress gw, IpPacket ip) throws IOException {
-        Dump.dumpIndent();
-
         // TODO need to handle case where locally addressed. like ping its own address.
         link.send(gw, ip);
-        
-        Dump.dumpDedent();
     }
 
     @Override
@@ -96,10 +90,8 @@ public class LocalSubnet implements Subnet {
 
     @Override
     public void send(InetAddress dst, ByteBuffer[] bbs) throws IOException {
-        Dump.dumpIndent();
-        Dump.dump("DirectSubnet: send dst=" + dst);
+        Flow.trace("LocalSubnet: send dst=" + dst);
         link.send(src, dst, bbs);
-        Dump.dumpDedent();
     }
 
     protected void add(RemoteSubnet remote) {
@@ -125,7 +117,7 @@ public class LocalSubnet implements Subnet {
 
     @Override
     public String toString() {
-        return "[" + network + ":" + src + ":" + link + "]";
+    	return "LocalSubnet(network=" + network + ", src="+ src + ", link=" + link + ")";
     }
 
     public IpLinkSupport getLink() {

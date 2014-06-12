@@ -9,7 +9,7 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import code.messy.net.Dump;
+import code.messy.net.Flow;
 import code.messy.net.ip.NetworkNumber;
 import code.messy.net.ip.udp.UdpPacket;
 import code.messy.net.ip.udp.UdpPacketHandler;
@@ -35,8 +35,7 @@ public class RipHandler implements UdpPacketHandler {
 
     @Override
     public void handle(UdpPacket udp) {
-        Dump.dumpIndent();
-        Dump.dump("RipHandler: handling...");
+        Flow.trace("RipHandler: handling...");
 
         try {
             ByteBuffer bb = udp.getByteBuffer();
@@ -87,7 +86,6 @@ public class RipHandler implements UdpPacketHandler {
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
-        Dump.dumpDedent();
     }
 
 }

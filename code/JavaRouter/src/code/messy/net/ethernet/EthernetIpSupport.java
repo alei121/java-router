@@ -5,7 +5,7 @@ import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
 import code.messy.Receiver;
-import code.messy.net.Dump;
+import code.messy.net.Flow;
 import code.messy.net.ip.IpLinkSupport;
 import code.messy.net.ip.IpPacket;
 import code.messy.util.IpAddressHelper;
@@ -17,19 +17,19 @@ public class EthernetIpSupport implements IpLinkSupport {
     	this.port = port;
     }
     
+    @Override
     public EthernetPort getPort() {
 		return port;
 	}
 
     @Override
     public String toString() {
-        return "EthernetIpSupport[port=" + port + "]";
+        return "EthernetIpSupport(port=" + port + ")";
     }
 
     @Override
     public void send(InetAddress dst, IpPacket ip) throws IOException {
-        Dump.dumpIndent();
-        Dump.dump("EthernetIpSupport: send dst=" + dst);
+        Flow.trace("EthernetIpSupport.send: dst=" + dst);
 
         MacAddress dstMac;
         if (IpAddressHelper.isBroadcast(dst)) {
@@ -41,14 +41,12 @@ public class EthernetIpSupport implements IpLinkSupport {
         else {
             dstMac = ArpHandler.getAddress(ip.getSourceAddress(), dst, port);
             if (dstMac == null) {
-                Dump.dump("Unknown mac for " + dst
+                Flow.trace("EthernetIpSupport.send: Unknown mac for " + dst
                         + ". Maybe ARP requesting.");
-                Dump.dumpDedent();
                 return;
             }
         }
         port.send(dstMac, Ethertype.IP, ip.getPacket());
-        Dump.dumpDedent();
     }
 
     @Override
@@ -59,8 +57,7 @@ public class EthernetIpSupport implements IpLinkSupport {
     @Override
     public void send(InetAddress src, InetAddress dst, ByteBuffer[] payload)
             throws IOException {
-        Dump.dumpIndent();
-        Dump.dump("EthernetPort: send src=" + src + " dst=" + dst);
+        Flow.trace("EthernetIpSupport.send: src=" + src + " dst=" + dst);
 
         MacAddress dstMac;
         if (IpAddressHelper.isBroadcast(dst)) {
@@ -71,14 +68,12 @@ public class EthernetIpSupport implements IpLinkSupport {
         } else {
             dstMac = ArpHandler.getAddress(src, dst, port);
             if (dstMac == null) {
-                Dump.dump("Unknown mac for " + dst
+                Flow.trace("Unknown mac for " + dst
                         + ". Maybe ARP requesting.");
-                Dump.dumpDedent();
                 return;
             }
         }
         port.send(dstMac, Ethertype.IP, payload);
-        Dump.dumpDedent();
     }
     
     class PacketToIp implements Receiver<EthernetPacket> {
@@ -91,6 +86,9 @@ public class EthernetIpSupport implements IpLinkSupport {
 		@Override
 		public void receive(EthernetPacket packet) {
 			IpPacket ip = new IpPacket(packet, EthernetIpSupport.this);
+			Flow.trace("EthernetIpSupport.receive: src="
+					+ ip.getSourceAddress() + " dst="
+					+ ip.getDestinationAddress());
 			receiver.receive(ip);
 		}
     	

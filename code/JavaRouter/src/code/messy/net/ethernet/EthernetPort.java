@@ -9,6 +9,7 @@ import java.util.HashMap;
 
 import code.messy.Receiver;
 import code.messy.Registrable;
+import code.messy.net.Flow;
 import code.messy.net.Packet;
 import code.messy.net.Port;
 import code.messy.net.RawSocket;
@@ -30,7 +31,7 @@ public class EthernetPort extends Thread implements Port, Registrable<Ethertype,
 
     @Override
     public String toString() {
-        return "[EthernetPort port=" + port + " mac=" + mac + "]";
+        return "EthernetPort(port=" + port + ", mac=" + mac + ")";
     }
 
     
@@ -85,6 +86,7 @@ public class EthernetPort extends Thread implements Port, Registrable<Ethertype,
     */
 
     public void send(MacAddress dstMac, Ethertype type, ByteBuffer[] payload) throws IOException {
+    	Flow.trace("EthernetPort.send: dst=" + dstMac + " type=" + type);
         ByteBuffer header = ByteBuffer.allocateDirect(60);
         header.put(dstMac.getAddress());
         header.put(mac.getAddress());
@@ -100,6 +102,7 @@ public class EthernetPort extends Thread implements Port, Registrable<Ethertype,
     }
     
     public void send(MacAddress dstMac, Ethertype type, Packet packet) throws IOException {
+    	Flow.trace("EthernetPort.send: dst=" + dstMac + " type=" + type);
         ByteBuffer header = ByteBuffer.allocateDirect(60);
         header.put(dstMac.getAddress());
         header.put(mac.getAddress());
@@ -137,7 +140,9 @@ public class EthernetPort extends Thread implements Port, Registrable<Ethertype,
                 socket.read(bb);
                 bb.flip();
         		EthernetPacket ep = new EthernetPacket(bb, this);
-
+        		
+        		Flow.traceStart();
+        		Flow.trace("EthernetPort port=" + port + " src=" + ep.getSourceAddress());
         		Receiver<EthernetPacket> ph = map.get(ep.getEthertype());
                 if (ph != null) {
                     ph.receive(ep);

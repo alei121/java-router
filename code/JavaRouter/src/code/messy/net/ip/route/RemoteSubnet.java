@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
-import code.messy.net.Dump;
+import code.messy.net.Flow;
 import code.messy.net.ip.IpPacket;
 import code.messy.net.ip.NetworkNumber;
 
@@ -31,10 +31,8 @@ public class RemoteSubnet implements Subnet {
 
     @Override
     public void forward(IpPacket ip) throws IOException {
-        Dump.dumpIndent();
-        Dump.dump("RemoteSubnet: forward dst=" + ip.getDestinationAddress());
+        Flow.trace("RemoteSubnet: forward dst=" + ip.getDestinationAddress());
         direct.forward(nextHop, ip);
-        Dump.dumpDedent();
     }
 
     @Override

@@ -201,4 +201,9 @@ public class IpPacket implements Packet {
     public IpLinkSupport getIpSupport() {
 		return ipSupport;
 	}
+    
+    @Override
+    public String toString() {
+    	return "IpPacket(src=" + sourceAddress + ", dst=" + destinationAddress + ")";
+    }
 }

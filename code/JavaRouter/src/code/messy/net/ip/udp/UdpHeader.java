@@ -5,14 +5,13 @@ package code.messy.net.ip.udp;
 
 import java.nio.ByteBuffer;
 
-import code.messy.net.Dump;
+import code.messy.net.Flow;
 
 public class UdpHeader {
     static public ByteBuffer create(int src, int dst, ByteBuffer[] payload) {
-        Dump.dumpIndent();
         ByteBuffer header = ByteBuffer.allocateDirect(8);
 
-        Dump.dump("UdpHeader: create src=" + src + " dst=" + dst);
+        Flow.trace("UdpHeader: create src=" + src + " dst=" + dst);
 
         int remain = 0;
         for (ByteBuffer bb : payload) {
@@ -28,7 +27,6 @@ public class UdpHeader {
         
         header.flip();
         
-        Dump.dumpDedent();
         return header;
     }
 }

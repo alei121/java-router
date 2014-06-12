@@ -7,7 +7,7 @@ import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
 import code.messy.Receiver;
-import code.messy.net.Dump;
+import code.messy.net.Flow;
 import code.messy.net.ip.IpPacket;
 import code.messy.net.ip.TupleMap;
 
@@ -25,10 +25,9 @@ public class UdpHandler implements Receiver<IpPacket> {
 
     @Override
     public void receive(IpPacket ip) {
-        Dump.dumpIndent();
         UdpPacket udp = new UdpPacket(ip);
 
-        Dump.dump("UdpHandler: src=" + udp.getSrcPort() + " dst=" + udp.getDstPort());
+        Flow.trace("UdpHandler: src=" + udp.getSrcPort() + " dst=" + udp.getDstPort());
 
         // TODO check checksum
 
@@ -38,9 +37,8 @@ public class UdpHandler implements Receiver<IpPacket> {
             ph.handle(udp);
         }
         else {
-            Dump.dump("UdpHandler: no handler");
+            Flow.trace("UdpHandler: no handler");
         }
-        Dump.dumpDedent();
     }
 
 }

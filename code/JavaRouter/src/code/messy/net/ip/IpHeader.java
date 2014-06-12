@@ -6,17 +6,15 @@ package code.messy.net.ip;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
-import code.messy.net.Dump;
+import code.messy.net.Flow;
 
 public class IpHeader {
     // special bytebuffer[] payload. it will skip null for "remain" calculation
 
     static public ByteBuffer create(InetAddress src, InetAddress dst, IpPacket.Protocol protocol, int ttl, ByteBuffer[] payload) {
-        Dump.dumpIndent();
-        
         ByteBuffer header = ByteBuffer.allocateDirect(20);
         
-        Dump.dump("IpHeader: create src=" + src + " dst=" + dst + " protocol=" + protocol);
+        Flow.trace("IpHeader: create src=" + src + " dst=" + dst + " protocol=" + protocol);
         
         int remain = 0;
         for (ByteBuffer bb : payload) {
@@ -48,7 +46,6 @@ public class IpHeader {
         header.putShort(10, IpPacket.getChecksum(header, 0, 20));
         header.flip();
 
-        Dump.dumpDedent();
         return header;
     }
 

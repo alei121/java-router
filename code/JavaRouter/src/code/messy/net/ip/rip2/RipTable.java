@@ -7,7 +7,7 @@ import java.net.InetAddress;
 import java.util.Collection;
 import java.util.HashMap;
 
-import code.messy.net.Dump;
+import code.messy.net.Flow;
 import code.messy.net.Port;
 import code.messy.net.ip.NetworkNumber;
 import code.messy.net.ip.route.RoutingTable;
@@ -17,8 +17,6 @@ public class RipTable {
 
     public void add(NetworkNumber network, InetAddress nexthop, int metric,
             Port port) {
-        Dump.dumpIndent();
-
         // TODO consult RFC for different rules
 
         if (nexthop == null) {
@@ -37,7 +35,7 @@ public class RipTable {
                     // no need to add to main routing table. should be already there
                 } else if (nexthop.equals(entry.getNextHop())) {
                     entry.updateTimestamp();
-                    Dump.dump("RipTable: Update timestamp " + entry);
+                    Flow.trace("RipTable: Update timestamp " + entry);
                 }
             } else {
                 entry = new RipEntry(network, nexthop, metric, port);
@@ -45,16 +43,14 @@ public class RipTable {
                 addToRoutingTable(entry);
             }
         }
-
-        Dump.dumpDedent();
     }
 
     private void addToRoutingTable(RipEntry entry) {
         if (RoutingTable.getInstance().add(entry.getRemoteSubnet())) {
             entry.setActive(true);
-            Dump.dump("RipTable: Added entry " + entry);
+            Flow.trace("RipTable: Added entry " + entry);
         } else {
-            Dump.dump("RipTable: Route entry conflict " + entry);
+            Flow.trace("RipTable: Route entry conflict " + entry);
         }
     }
 

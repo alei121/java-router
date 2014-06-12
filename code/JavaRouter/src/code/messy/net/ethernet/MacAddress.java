@@ -6,7 +6,8 @@ package code.messy.net.ethernet;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
-import java.util.Formatter;
+
+import code.messy.util.ByteHelper;
 
 public class MacAddress {
     static public MacAddress BROADCAST = new MacAddress((byte)0xFF, (byte)0xFF, (byte)0xFF,
@@ -57,15 +58,7 @@ public class MacAddress {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        Formatter f = new Formatter(sb);
-        f.format("%02x", address[0] & 0xFF);
-        for (int i = 1; i < address.length; i++) {
-            sb.append(':');
-            f.format("%02x", address[i] & 0xFF);
-        }
-        f.close();
-        return sb.toString();
+    	return ByteHelper.toString(address, ":");
     }
     
     static public MacAddress getMulticast(InetAddress multicast) {

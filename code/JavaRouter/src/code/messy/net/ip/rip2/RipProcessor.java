@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import code.messy.net.Dump;
+import code.messy.net.Flow;
 import code.messy.net.Port;
 import code.messy.net.ip.IpHeader;
 import code.messy.net.ip.IpPacket;
@@ -137,7 +137,7 @@ public class RipProcessor {
             // TODO check expired entries
             
             try {
-                Dump.dump("Rip2: 30 sec wakeup. network=" + direct);
+                Flow.trace("Rip2: 30 sec wakeup. network=" + direct);
 
                 payload.clear();
                 payload.put((byte) 2);

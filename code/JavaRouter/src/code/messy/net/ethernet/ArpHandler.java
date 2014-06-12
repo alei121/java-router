@@ -11,7 +11,7 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 
 import code.messy.Receiver;
-import code.messy.net.Dump;
+import code.messy.net.Flow;
 import code.messy.net.ip.route.LocalSubnet;
 
 public class ArpHandler implements Receiver<EthernetPacket> {
@@ -61,7 +61,6 @@ public class ArpHandler implements Receiver<EthernetPacket> {
 
     @Override
     public void receive(EthernetPacket packet) {
-        Dump.dumpIndent();
         ByteBuffer bb = packet.getByteBuffer();
         int offset = packet.getDataOffset();
         bb.position(offset);
@@ -72,10 +71,9 @@ public class ArpHandler implements Receiver<EthernetPacket> {
 
         if (hwType != 0x1 || protocolType != 0x800 || hwSize != 6
                 || protocolSize != 4) {
-            Dump.dump("Unsupported ARP message " + offset + " "
+            Flow.trace("Unsupported ARP message " + offset + " "
                     + hwType + " " + protocolType + " " + hwSize + " "
                     + protocolSize);
-            Dump.dumpDedent();
             return;
         }
 
@@ -88,10 +86,12 @@ public class ArpHandler implements Receiver<EthernetPacket> {
                 bb.get(ipBytes);
                 InetAddress senderAddress = InetAddress.getByAddress(ipBytes);
 
-                // TODO Need timer expire for ARP entries
-                map.put(senderAddress, senderMac);
-                Dump.dump("ArpHandler: request. Learned ip=" + senderAddress
-                        + " mac=" + senderMac);
+                if (map.get(senderAddress) == null) {
+                    // TODO Need timer expire for ARP entries
+                	map.put(senderAddress, senderMac);
+                	Flow.trace("ArpHandler: Request. Learned ip=" + senderAddress
+                			+ " mac=" + senderMac);
+                }
 
                 // skipping empty dst mac
                 bb.position(bb.position() + 6);
@@ -103,7 +103,7 @@ public class ArpHandler implements Receiver<EthernetPacket> {
                 EthernetPort port = (EthernetPort) packet.getPort();
 
                 LocalSubnet subnet = LocalSubnet.getSubnet(targetAddress);
-                if (subnet != null && port == subnet.getLink()) {
+                if (subnet != null && port == subnet.getLink().getPort()) {
                     ByteBuffer arp = ByteBuffer.allocateDirect(60);
 
                     // Ethernet
@@ -124,7 +124,7 @@ public class ArpHandler implements Receiver<EthernetPacket> {
 
                     arp.flip();
 
-                    Dump.dump("ArpHandler: response. ip=" + targetAddress
+                    Flow.trace("ArpHandler: response. ip=" + targetAddress
                             + " mac=" + port.getMac());
                     
                     ByteBuffer bbs[] = new ByteBuffer[1];
@@ -146,14 +146,15 @@ public class ArpHandler implements Receiver<EthernetPacket> {
                 bb.get(ipBytes);
                 InetAddress srcAddress = InetAddress.getByAddress(ipBytes);
 
-                // TODO Need timer expire for ARP entries
-                map.put(srcAddress, srcMac);
-                Dump.dump("ARP response: Learned ip=" + srcAddress
-                        + " mac=" + srcMac);
+                if (map.get(srcAddress) == null) {
+                	// TODO Need timer expire for ARP entries
+                	map.put(srcAddress, srcMac);
+                	Flow.trace("ARP response: Learned ip=" + srcAddress
+                			+ " mac=" + srcMac);
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-        Dump.dumpDedent();
     }
 }

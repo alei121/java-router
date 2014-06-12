@@ -8,7 +8,7 @@ import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
 import code.messy.Receiver;
-import code.messy.net.Dump;
+import code.messy.net.Flow;
 import code.messy.net.ip.IpHeader;
 import code.messy.net.ip.IpPacket;
 import code.messy.net.ip.route.LocalSubnet;
@@ -16,8 +16,6 @@ import code.messy.net.ip.route.LocalSubnet;
 public class IcmpHandler implements Receiver<IpPacket> {
     @Override
     public void receive(IpPacket ip) {
-        Dump.dumpIndent();
-        
         ByteBuffer bb = ip.getByteBuffer();
         int offset = ip.getDataOffset();
         int length = ip.getDataLength();
@@ -25,17 +23,15 @@ public class IcmpHandler implements Receiver<IpPacket> {
         byte type = bb.get(offset);
 
         if (type != 8) {
-            Dump.dump("Unsupported operation");
-            Dump.dumpDedent();
+            Flow.trace("IcmpHandler: Unsupported operation");
             return;
         }
         if (IpPacket.getChecksum(bb, offset, length) != 0) {
-            Dump.dump("Invalid ICMP checksum");
-            Dump.dumpDedent();
+            Flow.trace("IcmpHandler: Invalid ICMP checksum");
             return;
         }
 
-        Dump.dump("IcmpHandler: echo request. Length=" + length);
+        Flow.trace("IcmpHandler: echo request. Length=" + length);
         // Echo reply
         bb.rewind();
         try {
@@ -56,7 +52,7 @@ public class IcmpHandler implements Receiver<IpPacket> {
             icmp.putShort(2, IpPacket.getChecksum(icmp, 0, length));
 
             icmp.flip();
-            Dump.dump("IcmpHandler: echo response");
+            Flow.trace("IcmpHandler: echo response");
             
             
             ByteBuffer[] bbs = new ByteBuffer[2];
@@ -69,7 +65,5 @@ public class IcmpHandler implements Receiver<IpPacket> {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        
-        Dump.dumpDedent();
     }
 }

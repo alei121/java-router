@@ -6,6 +6,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+import code.messy.net.Flow;
 import code.messy.net.ip.IpHeader;
 import code.messy.net.ip.IpPacket;
 import code.messy.net.ip.NetworkNumber;
@@ -39,7 +40,7 @@ public class DhcpHandler implements UdpPacketHandler {
 		bb.position(udp.getDataOffset());
 		DhcpMessage message = new DhcpMessage(bb);
 
-		System.out.println("message=" + message.toString());
+		Flow.trace("DhcpHandler: message=" + message);
 		if (message.getMessageType() == DHCPMessageType.DHCPDISCOVER) {
 			message.setOp((byte) 2);
 
@@ -67,7 +68,6 @@ public class DhcpHandler implements UdpPacketHandler {
 			}
 		}
 		else if (message.getMessageType() == DHCPMessageType.DHCPREQUEST) {
-			System.out.println("DHCP request");
 		}
 	}
 }

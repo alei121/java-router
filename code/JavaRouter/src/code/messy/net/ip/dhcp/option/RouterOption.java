@@ -1,5 +1,6 @@
 package code.messy.net.ip.dhcp.option;
 
+import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
 public class RouterOption implements OptionIF {
@@ -8,6 +9,10 @@ public class RouterOption implements OptionIF {
 	
 	public RouterOption(byte[] routers) {
 		this.routers = routers;
+	}
+
+	public RouterOption(InetAddress gateway) {
+		routers = gateway.getAddress();
 	}
 
 	@Override

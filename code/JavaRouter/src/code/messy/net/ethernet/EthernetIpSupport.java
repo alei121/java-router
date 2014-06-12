@@ -8,6 +8,7 @@ import code.messy.Receiver;
 import code.messy.net.Dump;
 import code.messy.net.ip.IpLinkSupport;
 import code.messy.net.ip.IpPacket;
+import code.messy.util.IpAddressHelper;
 
 public class EthernetIpSupport implements IpLinkSupport {
     EthernetPort port;
@@ -31,9 +32,13 @@ public class EthernetIpSupport implements IpLinkSupport {
         Dump.dump("EthernetIpSupport: send dst=" + dst);
 
         MacAddress dstMac;
-        if (dst.isMulticastAddress()) {
+        if (IpAddressHelper.isBroadcast(dst)) {
+        	dstMac = MacAddress.BROADCAST;
+        }
+        else if (dst.isMulticastAddress()) {
             dstMac = MacAddress.getMulticast(dst);
-        } else {
+        }
+        else {
             dstMac = ArpHandler.getAddress(ip.getSourceAddress(), dst, port);
             if (dstMac == null) {
                 Dump.dump("Unknown mac for " + dst
@@ -58,7 +63,10 @@ public class EthernetIpSupport implements IpLinkSupport {
         Dump.dump("EthernetPort: send src=" + src + " dst=" + dst);
 
         MacAddress dstMac;
-        if (dst.isMulticastAddress()) {
+        if (IpAddressHelper.isBroadcast(dst)) {
+        	dstMac = MacAddress.BROADCAST;
+        }
+        else if (dst.isMulticastAddress()) {
             dstMac = MacAddress.getMulticast(dst);
         } else {
             dstMac = ArpHandler.getAddress(src, dst, port);

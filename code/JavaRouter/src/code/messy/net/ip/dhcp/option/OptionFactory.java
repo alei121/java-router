@@ -2,24 +2,28 @@ package code.messy.net.ip.dhcp.option;
 
 public class OptionFactory {
 	public static OptionIF createOption(int type, byte[] value) {
-		switch (type) {
-		case 1:
+		Code code = Code.find(type);
+		switch (code) {
+		case SubnetMask:
 			return new SubnetMask(value);
-		case 3:
+		case RouterOption:
 			return new RouterOption(value);
-		case 6:
-			return new DNSOption(value);
-		case 50:
+		case DomainNameServerOption:
+			return new DomainNameServerOption(value);
+		case HostNameOption:
+			return new HostNameOption(value);
+		case RequestedIPAddress:
 			return new RequestedIPAddress(value);
-		case 51:
+		case IPAddressLeaseTime:
 			return new IPAddressLeaseTime(value);
-		case 53:
-			return new MessageType(value);
-		case 54:
-			return new ServerIdentitier(value);
-		case 55:
+		case DHCPMessageType:
+			return new DHCPMessageType(value);
+		case ServerIdentifier:
+			return new ServerIdentifier(value);
+		case ParameterRequestList:
 			return new ParameterRequestList(value);
+		default:
+			return new Unknown(type, value);
 		}
-		return null;
 	}
 }

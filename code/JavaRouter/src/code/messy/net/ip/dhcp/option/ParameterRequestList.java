@@ -23,7 +23,13 @@ public class ParameterRequestList implements OptionIF {
 	public String toString() {
 		StringBuilder sb = new StringBuilder("ParameterRequestList list=");
 		for (int i = 0; i < list.length; i++) {
-			sb.append(list[i]);
+			Code code = Code.find(list[i]);
+			if (code != null) {
+				sb.append(code.name() + "(" + list[i] + ")");
+			}
+			else {
+				sb.append(list[i]);
+			}
 			if (i < (list.length - 1)) sb.append(",");
 		}
 		return sb.toString();

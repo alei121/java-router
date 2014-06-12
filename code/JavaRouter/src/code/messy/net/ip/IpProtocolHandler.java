@@ -11,6 +11,7 @@ import code.messy.net.ip.IpPacket.Protocol;
 
 public class IpProtocolHandler implements Registrable<IpPacket.Protocol, Receiver<IpPacket>>, Receiver<IpPacket> {
     HashMap<Byte, Receiver<IpPacket>> map = new HashMap<Byte, Receiver<IpPacket>>();
+    Receiver<IpPacket> defaultReceiver = null;
 
     @Override
     public void receive(IpPacket packet) {
@@ -18,6 +19,9 @@ public class IpProtocolHandler implements Registrable<IpPacket.Protocol, Receive
         Receiver<IpPacket> ph = map.get(protocol);
         if (ph != null) {
             ph.receive(packet);
+        }
+        else if (defaultReceiver != null) {
+        	defaultReceiver.receive(packet);
         }
     }
 
@@ -28,8 +32,6 @@ public class IpProtocolHandler implements Registrable<IpPacket.Protocol, Receive
 
 	@Override
 	public void register(Receiver<IpPacket> handler) {
-		// TODO Auto-generated method stub
-		
+		defaultReceiver = handler;
 	}
-
 }

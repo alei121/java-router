@@ -4,6 +4,7 @@ import java.util.Hashtable;
 
 import code.messy.net.Port;
 import code.messy.net.ethernet.MacAddress;
+import code.messy.util.Flow;
 
 public class LearnedMac {
     private static final long LEARNED_ENTRY_TIMEOUT = 5000;
@@ -14,7 +15,7 @@ public class LearnedMac {
         if (entry == null) {
             entry = new Entry(mac, port);
             map.put(mac, entry);
-            System.out.println("Learned " + entry);
+            Flow.trace("LearnedMac learned: entry=" + entry);
         }
         else {
             entry.updateTimestamp();
@@ -25,7 +26,7 @@ public class LearnedMac {
         Entry entry = map.get(mac);
         if (entry != null) {
             if (entry.isExpired()) {
-                System.out.println("Expired " + entry);
+            	Flow.trace("LearnedMac expired: entry=" + entry);
                 map.remove(mac);
             }
             else {
@@ -74,7 +75,7 @@ public class LearnedMac {
 
         @Override
         public String toString() {
-            return "[" + mac.toString() + "," + port.toString() + "]";
+            return "LearnedMac.Entry(" + mac.toString() + ", " + port.toString() + ")";
         }
     }
 

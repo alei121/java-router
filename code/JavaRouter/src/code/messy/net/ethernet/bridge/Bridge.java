@@ -12,6 +12,7 @@ import code.messy.net.Port;
 import code.messy.net.ethernet.EthernetPacket;
 import code.messy.net.ethernet.EthernetPort;
 import code.messy.net.ethernet.MacAddress;
+import code.messy.util.Flow;
 
 public class Bridge implements Receiver<EthernetPacket> {
     List<EthernetPort> ports = new ArrayList<EthernetPort>();
@@ -27,7 +28,7 @@ public class Bridge implements Receiver<EthernetPacket> {
     	Port port = ep.getPort();
         for (EthernetPort targetPort : ports) {
             if (targetPort != port) {
-            	System.out.println("sendToOthers bridge=" + name + " send port=" + targetPort);
+            	Flow.trace("Bridge: sendToOthers port=" + targetPort);
                 targetPort.send(ep);
             }
         }
@@ -44,18 +45,17 @@ public class Bridge implements Receiver<EthernetPacket> {
             learnedMac.learn(srcMac, port);
 
             if (dstMac.isBroadcast()) {
-                System.out.println("broadcast");
+                Flow.trace("Bridge: dst=broadcast");
                 sendToOthers(ep);
             } else {
                 Port targetPort = learnedMac.get(dstMac);
-                System.out.println("handle bridge=" + name + " targetPort=" + targetPort);
                 if (targetPort == null) {
-                    System.out.println("sending to others");
+                	Flow.trace("Bridge: Unknown mac. Send to others");
                     sendToOthers(ep);
                 } else if (targetPort != port) {
                     // TODO this check is preventing the
                     // loop because output packets get captured also
-                    System.out.println("sending to target");
+                	Flow.trace("Bridge: Send target=" + targetPort);
                     targetPort.send(ep);
                 }
             }

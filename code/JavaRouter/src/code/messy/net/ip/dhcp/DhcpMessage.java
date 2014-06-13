@@ -133,4 +133,12 @@ public class DhcpMessage {
 	public void setYiaddr(int yiaddr) {
 		this.yiaddr = yiaddr;
 	}
+	
+	public byte[] getChaddr() {
+		return chaddr;
+	}
+	
+	public byte getHlen() {
+		return hlen;
+	}
 }

@@ -1,6 +1,7 @@
 package code.messy.util;
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.Formatter;
 
 public class ByteHelper {
@@ -113,4 +114,25 @@ public class ByteHelper {
     public static String toString(byte[] b, String divider) {
     	return toString(b, divider, b.length);
     }
+    
+    public static class ByteArray {
+    	private final byte[] data;
+
+    	public ByteArray(byte[] data) {
+			this.data = data.clone();
+		}
+
+		public int hashCode() {
+			return Arrays.hashCode(data);
+		}
+
+		public boolean equals(Object other) {
+			if (other instanceof ByteArray) {
+				if (Arrays.equals(data, ((ByteArray)other).data)) {
+					return true;
+				}
+			}
+			return false;
+		}
+	}
 }

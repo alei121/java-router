@@ -4,8 +4,12 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import code.messy.net.ethernet.MacAddress;
 import code.messy.net.ip.IpHeader;
 import code.messy.net.ip.IpPacket;
 import code.messy.net.ip.NetworkNumber;
@@ -20,6 +24,7 @@ import code.messy.net.ip.route.LocalSubnet;
 import code.messy.net.ip.udp.UdpHeader;
 import code.messy.net.ip.udp.UdpPacket;
 import code.messy.net.ip.udp.UdpPacketHandler;
+import code.messy.util.ByteHelper;
 import code.messy.util.Flow;
 import code.messy.util.IpAddressHelper;
 
@@ -27,11 +32,15 @@ public class DhcpHandler implements UdpPacketHandler {
 	private InetAddress gateway;
 	private NetworkNumber network;
 	private LocalSubnet subnet;
+	private Map<ByteHelper.ByteArray, Integer> mapOfHardwareToIP = new HashMap<>();
+	private int nextIP;
 
 	public DhcpHandler(LocalSubnet subnet) {
 		this.network = subnet.getNetwork();
 		this.gateway = subnet.getSrcAddress();
 		this.subnet = subnet;
+		// TODO need to be configurable and able to release and timeout
+		this.nextIP = IpAddressHelper.getInt(gateway) + 1;
 	}
 
 	@Override
@@ -44,8 +53,15 @@ public class DhcpHandler implements UdpPacketHandler {
 		if (message.getMessageType() == DHCPMessageType.DHCPDISCOVER) {
 			message.setOp((byte) 2);
 
-			// TODO manage address maps later
-			message.setYiaddr(IpAddressHelper.getInt(gateway) + 1);
+			byte[] b = Arrays.copyOf(message.getChaddr(), message.getHlen());
+			ByteHelper.ByteArray hardware = new ByteHelper.ByteArray(b);
+			Integer ip = mapOfHardwareToIP.get(hardware);
+			if (ip == null) {
+				ip = nextIP;
+				mapOfHardwareToIP.put(hardware, ip);
+				nextIP++;
+			}
+			message.setYiaddr(ip);
 			
 			List<OptionIF> options = new ArrayList<>();
 			options.add(new SubnetMask(network));
@@ -63,6 +79,9 @@ public class DhcpHandler implements UdpPacketHandler {
 				bbs[0] = IpHeader.create(gateway, IpAddressHelper.BROADCAST_ADDRESS,
 						IpPacket.Protocol.UDP, 1, bbs);
 				subnet.send(IpAddressHelper.BROADCAST_ADDRESS, bbs);
+				
+				// TODO should be unicast!!
+				
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

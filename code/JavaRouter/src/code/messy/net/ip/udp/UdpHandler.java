@@ -17,9 +17,9 @@ public class UdpHandler implements Receiver<IpPacket> {
 
     }
 
-    TupleMap<UdpPacketHandler> tupleMap = new TupleMap<UdpPacketHandler>();
+    TupleMap<Receiver<UdpPacket>> tupleMap = new TupleMap<Receiver<UdpPacket>>();
 
-    public void add(InetAddress dstAddress, int dstPort, UdpPacketHandler ph) {
+    public void add(InetAddress dstAddress, int dstPort, Receiver<UdpPacket> ph) {
         tupleMap.add(null, dstAddress, 0, dstPort, ph);
     }
 
@@ -31,10 +31,10 @@ public class UdpHandler implements Receiver<IpPacket> {
 
         // TODO check checksum
 
-        UdpPacketHandler ph = tupleMap.get(ip.getSourceAddress(), ip
+        Receiver<UdpPacket> ph = tupleMap.get(ip.getSourceAddress(), ip
                 .getDestinationAddress(), udp.getSrcPort(), udp.getDstPort());
         if (ph != null) {
-            ph.handle(udp);
+            ph.receive(udp);
         }
         else {
             Flow.trace("UdpHandler: no handler");

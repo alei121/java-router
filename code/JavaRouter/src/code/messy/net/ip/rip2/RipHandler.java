@@ -9,12 +9,12 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.HashSet;
 
+import code.messy.Receiver;
 import code.messy.net.ip.NetworkNumber;
 import code.messy.net.ip.udp.UdpPacket;
-import code.messy.net.ip.udp.UdpPacketHandler;
 import code.messy.util.Flow;
 
-public class RipHandler implements UdpPacketHandler {
+public class RipHandler implements Receiver<UdpPacket> {
     HashSet<RipEntry> ripEntries = new HashSet<RipEntry>();
     
     InetAddress zeroAddress;
@@ -34,7 +34,7 @@ public class RipHandler implements UdpPacketHandler {
     }
 
     @Override
-    public void handle(UdpPacket udp) {
+    public void receive(UdpPacket udp) {
         Flow.trace("RipHandler: handling...");
 
         try {

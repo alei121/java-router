@@ -12,6 +12,11 @@ public class DHCPMessageType implements OptionIF {
 	public static final int DHCPRELEASE = 7;
 
 	byte type;
+	
+	public DHCPMessageType(byte type) {
+		this.type = type;
+	}
+	
 	public DHCPMessageType(byte[] value) {
 		type = value[0];
 	}

@@ -23,6 +23,16 @@ public class IpAddressHelper {
 		return ((b[0] & 0xFF) << 24) | ((b[1] & 0xFF) << 16) | ((b[2] & 0xFF) << 8) | (b[3] & 0xFF);
 	}
 	
+	public static InetAddress getInetAddress(int address) throws UnknownHostException {
+		// TODO assuming ipv4 now
+		byte[] b = new byte[4];
+		for (int i = 3; i >= 0; i++) {
+			b[i] = (byte)(address & 0xFF);
+			address = address >> 8;
+		}
+		return InetAddress.getByAddress(b);
+	}
+
 	public static boolean isBroadcast(InetAddress ip) {
 		return BROADCAST_ADDRESS.equals(ip);
 	}

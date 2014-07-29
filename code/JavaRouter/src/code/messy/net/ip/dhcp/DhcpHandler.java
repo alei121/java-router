@@ -14,7 +14,7 @@ import code.messy.net.ethernet.EthernetPacket;
 import code.messy.net.ethernet.EthernetPort;
 import code.messy.net.ethernet.Ethertype;
 import code.messy.net.ethernet.MacAddress;
-import code.messy.net.ip.IpHeader;
+import code.messy.net.ip.IpOutputPayload;
 import code.messy.net.ip.IpPacket;
 import code.messy.net.ip.NetworkNumber;
 import code.messy.net.ip.dhcp.option.DHCPMessageType;
@@ -24,7 +24,7 @@ import code.messy.net.ip.dhcp.option.RouterOption;
 import code.messy.net.ip.dhcp.option.ServerIdentifier;
 import code.messy.net.ip.dhcp.option.SubnetMask;
 import code.messy.net.ip.route.LocalSubnet;
-import code.messy.net.ip.udp.UdpHeader;
+import code.messy.net.ip.udp.UdpOutputPayload;
 import code.messy.net.ip.udp.UdpPacket;
 import code.messy.util.ByteHelper;
 import code.messy.util.Flow;
@@ -36,14 +36,12 @@ import code.messy.util.IpAddressHelper;
 public class DhcpHandler implements Receiver<UdpPacket> {
 	private InetAddress gateway;
 	private NetworkNumber network;
-	private LocalSubnet subnet;
 	private Map<ByteHelper.ByteArray, Integer> mapOfHardwareToIP = new HashMap<>();
 	private int nextIP;
 
 	public DhcpHandler(LocalSubnet subnet) {
 		this.network = subnet.getNetwork();
 		this.gateway = subnet.getSrcAddress();
-		this.subnet = subnet;
 		// TODO need to be configurable and able to release and timeout
 		this.nextIP = IpAddressHelper.getInt(gateway) + 1;
 	}
@@ -72,24 +70,22 @@ public class DhcpHandler implements Receiver<UdpPacket> {
 		message.setOptions(options);		
 	}
 
-	private void reply(UdpPacket udp, DhcpMessage message) {
+	private void reply(UdpPacket udpPacket, DhcpMessage message) {
 		try {
-			ByteBuffer bbs[] = new ByteBuffer[3];
-			bbs[2] = message.getPayload();
-			bbs[1] = UdpHeader.create(67, 68, bbs);
-			bbs[0] = IpHeader.create(gateway, IpAddressHelper.BROADCAST_ADDRESS,
-					IpPacket.Protocol.UDP, 1, bbs);
+			DhcpOutputPayload dhcp = new DhcpOutputPayload(message);
+			UdpOutputPayload udp = new UdpOutputPayload(67, 68, dhcp);
+			IpOutputPayload ip = new IpOutputPayload(gateway, IpAddressHelper.BROADCAST_ADDRESS, IpPacket.Protocol.UDP, 1, udp);
 			
-			EthernetPort port = (EthernetPort)udp.getPort();
-			EthernetPacket packet = (EthernetPacket)udp.getIp().getPacket();
+			EthernetPort port = (EthernetPort)udpPacket.getPort();
+			EthernetPacket packet = (EthernetPacket)udpPacket.getIp().getPacket();
 			MacAddress dstMac = packet.getSourceAddress();
-			port.send(dstMac, Ethertype.IP, bbs);
+			port.send(dstMac, Ethertype.IP, ip);
 			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
 	}
+	
 	@Override
 	public void receive(UdpPacket udp) {
 		ByteBuffer bb = udp.getByteBuffer();

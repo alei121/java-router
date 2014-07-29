@@ -5,10 +5,12 @@ package code.messy.net.ethernet;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import code.messy.Receiver;
 import code.messy.Registrable;
+import code.messy.net.OutputPayload;
 import code.messy.net.Packet;
 import code.messy.net.Port;
 import code.messy.net.RawSocket;
@@ -84,6 +86,15 @@ public class EthernetPort extends Thread implements Port, Registrable<Ethertype,
         Dump.dumpDedent();
     }
     */
+
+    public void send(MacAddress dstMac, Ethertype type, OutputPayload data) throws IOException {
+    	EthernetOutputPayload payload = new EthernetOutputPayload(mac, dstMac, type, data);
+    	
+    	ArrayList<ByteBuffer> list = new ArrayList<ByteBuffer>();
+    	payload.getByteBuffers(list);
+    	ByteBuffer[] bbs = list.toArray(new ByteBuffer[list.size()]);
+        socket.write(bbs);
+    }
 
     public void send(MacAddress dstMac, Ethertype type, ByteBuffer[] payload) throws IOException {
     	Flow.trace("EthernetPort.send: dst=" + dstMac + " type=" + type);

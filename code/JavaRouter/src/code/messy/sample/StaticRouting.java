@@ -39,49 +39,39 @@ public class StaticRouting {
      */
     public static void main(String[] args) throws Exception {
         RouteHandler route = new RouteHandler();
-
-        IpProtocolHandler protocol1 = new IpProtocolHandler();
-        IpProtocolHandler protocol2 = new IpProtocolHandler();
         IcmpHandler icmp = new IcmpHandler();
-        protocol1.register(IpPacket.Protocol.ICMP, icmp);
-        protocol2.register(IpPacket.Protocol.ICMP, icmp);
-        
-        EthernetPort eth1 = new EthernetPort(args[0]);
-        EthernetPort eth2 = new EthernetPort(args[3]);
-        InetAddress ip1 = InetAddress.getByName(args[1]);
-        InetAddress ip2 = InetAddress.getByName(args[4]);
-        short prefix = Short.parseShort(args[2]);
-        NetworkNumber network1 = new NetworkNumber(ip1, prefix);
-        prefix = Short.parseShort(args[5]);
-        NetworkNumber network2 = new NetworkNumber(ip2, prefix);
-        
-        EthernetIpSupport eth1ip = new EthernetIpSupport(eth1);
-        EthernetIpSupport eth2ip = new EthernetIpSupport(eth2);
+        EthernetPort eths[] = new EthernetPort[2];
 
-        LocalSubnet subnet1 = LocalSubnet.create(network1, ip1, eth1ip, protocol1);
-        LocalSubnet subnet2 = LocalSubnet.create(network2, ip2, eth2ip, protocol2);
+        for (int i = 0; i < 2; i++) {
+        	eths[i] = new EthernetPort(args[i * 3]);
+        	InetAddress ip = InetAddress.getByName(args[i * 3 + 1]);
+            short prefix = Short.parseShort(args[i * 3 + 2]);
+            
+            NetworkNumber network = new NetworkNumber(ip, prefix);
+            
+            IpProtocolHandler protocol = new IpProtocolHandler();
+            protocol.register(IpPacket.Protocol.ICMP, icmp);
+        	
+            EthernetIpSupport ethip = new EthernetIpSupport(eths[i]);
+            LocalSubnet subnet = LocalSubnet.create(network, ip, ethip, protocol);
 
-        UdpHandler udp1 = new UdpHandler();
-        UdpHandler udp2 = new UdpHandler();
-        DhcpHandler dhcp1 = new DhcpHandler(subnet1);
-        DhcpHandler dhcp2 = new DhcpHandler(subnet2);
-        udp1.add(null, 67, dhcp1);
-        udp2.add(null, 67, dhcp2);
-        IpBroadcastHandler broadcast1 = new IpBroadcastHandler(udp1, route);
-        IpBroadcastHandler broadcast2 = new IpBroadcastHandler(udp2, route);
-        
-        eth1ip.register(broadcast1);
-        eth2ip.register(broadcast2);
-        
-        RoutingTable.getInstance().add(subnet1);
-        RoutingTable.getInstance().add(subnet2);
+            UdpHandler udp = new UdpHandler();
+            DhcpHandler dhcp = new DhcpHandler(subnet);
+            udp.add(null, 67, dhcp);
+            IpBroadcastHandler broadcast = new IpBroadcastHandler(udp, route);
+            
+            ethip.register(broadcast);
+            RoutingTable.getInstance().add(subnet);
 
-        eth1.register(Ethertype.ARP, new ArpHandler());
-        eth2.register(Ethertype.ARP, new ArpHandler());
+            eths[i].register(Ethertype.ARP, new ArpHandler());
+        }
         
-        eth1.start();
-        eth2.start();
-        eth1.join();
-        eth2.join();
+        for (int i = 0; i < 2; i++) {
+        	eths[i].start();
+        }
+        
+        for (int i = 0; i < 2; i++) {
+        	eths[i].join();
+        }
     }
 }

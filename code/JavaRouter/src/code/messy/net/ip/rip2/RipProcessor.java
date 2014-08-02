@@ -108,7 +108,7 @@ public class RipProcessor {
         loops.add(loop);
         
         // adding to rip table
-        ripTable.add(localSubnet.getNetwork(), null, 0, (Port)localSubnet.getLink());
+        ripTable.add(localSubnet.getNetwork(), null, 0, localSubnet.getLink().getPort());
     }
 
     public void start() {

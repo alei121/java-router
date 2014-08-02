@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import code.messy.Receiver;
+import code.messy.net.OutputPayload;
 import code.messy.net.Packet;
 import code.messy.net.ip.IpLinkSupport;
 import code.messy.net.ip.IpPacket;
@@ -92,6 +93,12 @@ public class LocalSubnet implements Subnet {
     public void send(InetAddress dst, ByteBuffer[] bbs) throws IOException {
         Flow.trace("LocalSubnet: send dst=" + dst);
         link.send(src, dst, bbs);
+    }
+    
+    @Override
+    public void send(InetAddress dst, OutputPayload payload) throws IOException {
+        Flow.trace("LocalSubnet: send dst=" + dst);
+        link.send(src, dst, payload);
     }
 
     protected void add(RemoteSubnet remote) {

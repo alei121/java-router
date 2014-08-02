@@ -8,7 +8,7 @@ import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
 import code.messy.Receiver;
-import code.messy.net.ip.IpHeader;
+import code.messy.net.ip.IpOutputPayload;
 import code.messy.net.ip.IpPacket;
 import code.messy.net.ip.route.LocalSubnet;
 import code.messy.util.Flow;
@@ -32,36 +32,15 @@ public class IcmpHandler implements Receiver<IpPacket> {
         }
 
         Flow.trace("IcmpHandler: echo request. Length=" + length);
-        // Echo reply
-        bb.rewind();
         try {
-            ByteBuffer icmp = ByteBuffer.allocateDirect(length);
+        	bb.position(offset);
+        	IcmpOutputPayload icmp = new IcmpOutputPayload(bb);
             InetAddress dst = ip.getSourceAddress();
             LocalSubnet subnet = LocalSubnet.getSubnet(ip.getDestinationAddress());
             
-            // copy original
-            bb.position(offset);
-            icmp.put(bb);
-
-            // echo reply
-            icmp.put(0, (byte) 0);
-
-            // set checksum zero
-            icmp.putShort(2, (short) 0);
-            // recalculate checksum
-            icmp.putShort(2, IpPacket.getChecksum(icmp, 0, length));
-
-            icmp.flip();
-            Flow.trace("IcmpHandler: echo response");
-            
-            
-            ByteBuffer[] bbs = new ByteBuffer[2];
-            bbs[1] = icmp;
-            bbs[0] = IpHeader.create(subnet.getSrcAddress(),
-                    dst, IpPacket.Protocol.ICMP, 1, bbs);
-            subnet.send(dst, bbs);
-            
-            
+            IpOutputPayload output = new IpOutputPayload(subnet.getSrcAddress(),
+                    dst, IpPacket.Protocol.ICMP, icmp);
+            subnet.send(dst, output);
         } catch (IOException e) {
             e.printStackTrace();
         }

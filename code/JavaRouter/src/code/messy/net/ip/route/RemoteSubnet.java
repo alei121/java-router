@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
+import code.messy.net.OutputPayload;
 import code.messy.net.ip.IpPacket;
 import code.messy.net.ip.NetworkNumber;
 import code.messy.util.Flow;
@@ -44,6 +45,12 @@ public class RemoteSubnet implements Subnet {
     public void send(InetAddress dst, ByteBuffer[] bbs) throws IOException {
         // Ignoring dst and using nexthop
         direct.send(nextHop, bbs);
+    }
+    
+    @Override
+    public void send(InetAddress dst, OutputPayload payload) throws IOException {
+        // Ignoring dst and using nexthop
+        direct.send(nextHop, payload);
     }
 
     @Override

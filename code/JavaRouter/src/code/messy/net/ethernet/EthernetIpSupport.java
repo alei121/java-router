@@ -5,6 +5,7 @@ import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
 import code.messy.Receiver;
+import code.messy.net.OutputPayload;
 import code.messy.net.ip.IpLinkSupport;
 import code.messy.net.ip.IpPacket;
 import code.messy.util.Flow;
@@ -75,7 +76,30 @@ public class EthernetIpSupport implements IpLinkSupport {
         }
         port.send(dstMac, Ethertype.IP, payload);
     }
-    
+
+
+	@Override
+	public void send(InetAddress src, InetAddress dst, OutputPayload payload)
+			throws IOException {
+        Flow.trace("EthernetIpSupport.send: src=" + src + " dst=" + dst);
+
+        MacAddress dstMac;
+        if (IpAddressHelper.isBroadcast(dst)) {
+        	dstMac = MacAddress.BROADCAST;
+        }
+        else if (dst.isMulticastAddress()) {
+            dstMac = MacAddress.getMulticast(dst);
+        } else {
+            dstMac = ArpHandler.getAddress(src, dst, port);
+            if (dstMac == null) {
+                Flow.trace("Unknown mac for " + dst
+                        + ". Maybe ARP requesting.");
+                return;
+            }
+        }
+        port.send(dstMac, Ethertype.IP, payload);
+	}
+
     class PacketToIp implements Receiver<EthernetPacket> {
     	Receiver<IpPacket> receiver;
     	

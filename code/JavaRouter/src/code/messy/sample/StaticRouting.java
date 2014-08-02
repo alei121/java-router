@@ -41,17 +41,16 @@ public class StaticRouting {
         RouteHandler route = new RouteHandler();
         IcmpHandler icmp = new IcmpHandler();
         EthernetPort eths[] = new EthernetPort[2];
-
+        IpProtocolHandler protocol = new IpProtocolHandler();
+        protocol.register(IpPacket.Protocol.ICMP, icmp);
+        ArpHandler arp = new ArpHandler();
+    	
         for (int i = 0; i < 2; i++) {
         	eths[i] = new EthernetPort(args[i * 3]);
         	InetAddress ip = InetAddress.getByName(args[i * 3 + 1]);
             short prefix = Short.parseShort(args[i * 3 + 2]);
-            
             NetworkNumber network = new NetworkNumber(ip, prefix);
             
-            IpProtocolHandler protocol = new IpProtocolHandler();
-            protocol.register(IpPacket.Protocol.ICMP, icmp);
-        	
             EthernetIpSupport ethip = new EthernetIpSupport(eths[i]);
             LocalSubnet subnet = LocalSubnet.create(network, ip, ethip, protocol);
 
@@ -63,7 +62,7 @@ public class StaticRouting {
             ethip.register(broadcast);
             RoutingTable.getInstance().add(subnet);
 
-            eths[i].register(Ethertype.ARP, new ArpHandler());
+            eths[i].register(Ethertype.ARP, arp);
         }
         
         for (int i = 0; i < 2; i++) {

@@ -44,7 +44,7 @@ public class RipRouting {
 
         IcmpHandler icmp = new IcmpHandler();
         IpMapper ipLocalMapper = new IpMapper();
-        ipCommonMapper.register(IpPacket.Protocol.ICMP, icmp);
+        ipLocalMapper.register(IpPacket.Protocol.ICMP, icmp);
 
         RipProcessor rip = new RipProcessor(udp);
         

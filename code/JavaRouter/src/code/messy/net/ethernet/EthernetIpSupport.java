@@ -28,8 +28,9 @@ public class EthernetIpSupport implements IpLinkSupport {
         return "EthernetIpSupport(port=" + port + ")";
     }
 
-    @Override
-    public void send(InetAddress dst, IpPacket ip) throws IOException {
+	@Override
+	public void send(InetAddress src, InetAddress dst, IpPacket ip)
+			throws IOException {
         Flow.trace("EthernetIpSupport.send: dst=" + dst);
 
         MacAddress dstMac;
@@ -40,7 +41,7 @@ public class EthernetIpSupport implements IpLinkSupport {
             dstMac = MacAddress.getMulticast(dst);
         }
         else {
-            dstMac = ArpHandler.getAddress(ip.getSourceAddress(), dst, port);
+            dstMac = ArpHandler.getAddress(src, dst, port);
             if (dstMac == null) {
                 Flow.trace("EthernetIpSupport.send: Unknown mac for " + dst
                         + ". Maybe ARP requesting.");
@@ -48,6 +49,12 @@ public class EthernetIpSupport implements IpLinkSupport {
             }
         }
         port.send(dstMac, Ethertype.IP, ip.getPacket());
+	}
+	
+	
+    @Override
+    public void send(InetAddress dst, IpPacket ip) throws IOException {
+    	send(ip.getSourceAddress(), dst, ip);
     }
 
     @Override
@@ -117,4 +124,5 @@ public class EthernetIpSupport implements IpLinkSupport {
 		}
     	
     }
+
 }

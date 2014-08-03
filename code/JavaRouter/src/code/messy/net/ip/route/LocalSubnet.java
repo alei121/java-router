@@ -74,7 +74,7 @@ public class LocalSubnet implements Subnet {
 
             ByteBuffer bbs[] = new ByteBuffer[1];
             bbs[0] = packet.getByteBuffer();
-            link.send(dst, ip);
+            link.send(src, dst, ip);
 //            link.send(src, dst, bbs);
         }
     }

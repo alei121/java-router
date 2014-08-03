@@ -17,6 +17,7 @@ public interface IpLinkSupport {
 	
 	// TODO may remove in future
     void send(InetAddress src, InetAddress gw, ByteBuffer[] payload) throws IOException;
+	public void send(InetAddress src, InetAddress dst, IpPacket ip) throws IOException;
 
     void send(InetAddress src, InetAddress gw, OutputPayload payload) throws IOException;
 

@@ -17,10 +17,15 @@ public class UdpMapper implements Receiver<IpPacket> {
 
     }
 
+    Receiver<IpPacket> ipReceiver;
     TupleMap<Receiver<UdpPacket>> tupleMap = new TupleMap<Receiver<UdpPacket>>();
 
     public void add(InetAddress dstAddress, int dstPort, Receiver<UdpPacket> ph) {
         tupleMap.add(null, dstAddress, 0, dstPort, ph);
+    }
+    
+    public void registerFallback(Receiver<IpPacket> ipReceiver) {
+    	this.ipReceiver = ipReceiver;
     }
 
     @Override
@@ -36,8 +41,11 @@ public class UdpMapper implements Receiver<IpPacket> {
         if (ph != null) {
             ph.receive(udp);
         }
+        else if (ipReceiver != null) {
+        	ipReceiver.receive(ip);
+        }
         else {
-            Flow.trace("UdpHandler: no handler");
+            Flow.trace("UdpMapper: no handler");
         }
     }
 

@@ -9,10 +9,8 @@ import code.messy.net.ethernet.ArpHandler;
 import code.messy.net.ethernet.EthernetIpSupport;
 import code.messy.net.ethernet.EthernetPort;
 import code.messy.net.ethernet.Ethertype;
-import code.messy.net.ip.IpBroadcastHandler;
-import code.messy.net.ip.IpMulticastHandler;
+import code.messy.net.ip.IpMapper;
 import code.messy.net.ip.IpPacket;
-import code.messy.net.ip.IpProtocolHandler;
 import code.messy.net.ip.NetworkNumber;
 import code.messy.net.ip.dhcp.DhcpHandler;
 import code.messy.net.ip.icmp.IcmpHandler;
@@ -21,6 +19,7 @@ import code.messy.net.ip.route.LocalSubnet;
 import code.messy.net.ip.route.RouteHandler;
 import code.messy.net.ip.route.RoutingTable;
 import code.messy.net.ip.udp.UdpMapper;
+import code.messy.util.IpAddressHelper;
 
 public class RipRouting {
     /**
@@ -39,14 +38,15 @@ public class RipRouting {
         
         UdpMapper udp = new UdpMapper();
 
+        IpMapper ipCommonMapper = new IpMapper();
+        ipCommonMapper.register(IpPacket.Protocol.UDP, udp);
+        ipCommonMapper.register(route);
+
         IcmpHandler icmp = new IcmpHandler();
-        IpProtocolHandler protocol = new IpProtocolHandler();
-        protocol.register(IpPacket.Protocol.ICMP, icmp);
-        protocol.register(IpPacket.Protocol.UDP, udp);
+        IpMapper ipLocalMapper = new IpMapper();
+        ipCommonMapper.register(IpPacket.Protocol.ICMP, icmp);
 
         RipProcessor rip = new RipProcessor(udp);
-        
-        IpMulticastHandler multicast = new IpMulticastHandler(protocol, route);
         
         EthernetPort eths[] = new EthernetPort[2];
         
@@ -57,17 +57,20 @@ public class RipRouting {
             NetworkNumber network = new NetworkNumber(ip, prefix);
             
             EthernetIpSupport ethip = new EthernetIpSupport(eths[i]);
-            LocalSubnet subnet = LocalSubnet.create(network, ip, ethip, protocol);
+            LocalSubnet subnet = LocalSubnet.create(network, ip, ethip, ipLocalMapper);
             
             RoutingTable.getInstance().add(subnet);
             rip.addStaticRoute(subnet);
             
             UdpMapper udpForBroadcast = new UdpMapper();
             DhcpHandler dhcp = new DhcpHandler(subnet);
-            udpForBroadcast.add(null, 67, dhcp);
-            IpBroadcastHandler broadcast = new IpBroadcastHandler(udpForBroadcast, multicast);
+            udpForBroadcast.add(IpAddressHelper.BROADCAST_ADDRESS, 67, dhcp);
+            udp.add(ip, 67, dhcp);
+            IpMapper ipBroadcastMapper = new IpMapper();
+            ipBroadcastMapper.register(IpAddressHelper.BROADCAST_ADDRESS, IpPacket.Protocol.UDP, udpForBroadcast);
+            ipBroadcastMapper.register(ipCommonMapper);
             
-            ethip.register(broadcast);
+            ethip.register(ipBroadcastMapper);
             RoutingTable.getInstance().add(subnet);
 
             eths[i].register(Ethertype.ARP, new ArpHandler());

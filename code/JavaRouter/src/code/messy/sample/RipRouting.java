@@ -20,7 +20,7 @@ import code.messy.net.ip.rip2.RipProcessor;
 import code.messy.net.ip.route.LocalSubnet;
 import code.messy.net.ip.route.RouteHandler;
 import code.messy.net.ip.route.RoutingTable;
-import code.messy.net.ip.udp.UdpHandler;
+import code.messy.net.ip.udp.UdpMapper;
 
 public class RipRouting {
     /**
@@ -37,7 +37,7 @@ public class RipRouting {
     public static void main(String[] args) throws Exception {
         RouteHandler route = new RouteHandler();
         
-        UdpHandler udp = new UdpHandler();
+        UdpMapper udp = new UdpMapper();
 
         IcmpHandler icmp = new IcmpHandler();
         IpProtocolHandler protocol = new IpProtocolHandler();
@@ -62,7 +62,7 @@ public class RipRouting {
             RoutingTable.getInstance().add(subnet);
             rip.addStaticRoute(subnet);
             
-            UdpHandler udpForBroadcast = new UdpHandler();
+            UdpMapper udpForBroadcast = new UdpMapper();
             DhcpHandler dhcp = new DhcpHandler(subnet);
             udpForBroadcast.add(null, 67, dhcp);
             IpBroadcastHandler broadcast = new IpBroadcastHandler(udpForBroadcast, multicast);

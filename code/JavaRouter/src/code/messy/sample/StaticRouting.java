@@ -20,7 +20,7 @@ import code.messy.net.ip.icmp.IcmpHandler;
 import code.messy.net.ip.route.LocalSubnet;
 import code.messy.net.ip.route.RouteHandler;
 import code.messy.net.ip.route.RoutingTable;
-import code.messy.net.ip.udp.UdpHandler;
+import code.messy.net.ip.udp.UdpMapper;
 
 public class StaticRouting {
 
@@ -53,7 +53,7 @@ public class StaticRouting {
             EthernetIpSupport ethip = new EthernetIpSupport(eths[i]);
             LocalSubnet subnet = LocalSubnet.create(network, ip, ethip, protocol);
 
-            UdpHandler udp = new UdpHandler();
+            UdpMapper udp = new UdpMapper();
             DhcpHandler dhcp = new DhcpHandler(subnet);
             udp.add(null, 67, dhcp);
             IpBroadcastHandler broadcast = new IpBroadcastHandler(udp, route);

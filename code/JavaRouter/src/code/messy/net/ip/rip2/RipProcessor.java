@@ -16,7 +16,7 @@ import code.messy.net.Port;
 import code.messy.net.ip.IpHeader;
 import code.messy.net.ip.IpPacket;
 import code.messy.net.ip.route.LocalSubnet;
-import code.messy.net.ip.udp.UdpHandler;
+import code.messy.net.ip.udp.UdpMapper;
 import code.messy.net.ip.udp.UdpHeader;
 import code.messy.util.Flow;
 
@@ -92,7 +92,7 @@ public class RipProcessor {
     InetAddress multicastAddress;
     RipTable ripTable = new RipTable();
 
-    public RipProcessor(UdpHandler handler) {
+    public RipProcessor(UdpMapper handler) {
         try {
             RipHandler riph = new RipHandler(this);
             multicastAddress = InetAddress.getByName("224.0.0.9");

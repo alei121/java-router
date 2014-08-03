@@ -11,7 +11,7 @@ import code.messy.net.ip.IpPacket;
 import code.messy.net.ip.TupleMap;
 import code.messy.util.Flow;
 
-public class UdpHandler implements Receiver<IpPacket> {
+public class UdpMapper implements Receiver<IpPacket> {
     static public void send(InetAddress dstAddress, int dstPort,
             ByteBuffer[] bbs) {
 
@@ -27,7 +27,7 @@ public class UdpHandler implements Receiver<IpPacket> {
     public void receive(IpPacket ip) {
         UdpPacket udp = new UdpPacket(ip);
 
-        Flow.trace("UdpHandler: src=" + udp.getSrcPort() + " dst=" + udp.getDstPort());
+        Flow.trace("UdpMapper: src=" + udp.getSrcPort() + " dst=" + udp.getDstPort());
 
         // TODO check checksum
 

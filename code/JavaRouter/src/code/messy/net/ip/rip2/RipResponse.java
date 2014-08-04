@@ -7,10 +7,10 @@ import java.util.Collection;
 import code.messy.net.OutputPacket;
 import code.messy.net.ip.route.LocalSubnet;
 
-public class RipOutputPacket implements OutputPacket {
+public class RipResponse implements OutputPacket {
     ByteBuffer payload = ByteBuffer.allocateDirect(4 + 20 * 25);
 
-    public RipOutputPacket(RipTable ripTable, LocalSubnet direct) {
+    public RipResponse(RipTable ripTable, LocalSubnet direct) {
         payload.put((byte) 2);
         payload.put((byte) 2);
         payload.put((byte) 0);

@@ -35,7 +35,7 @@ public class IcmpHandler implements Receiver<IpInputPacket> {
         Flow.trace("IcmpHandler: echo request. Length=" + length);
         try {
         	bb.position(offset);
-        	IcmpOutputPacket icmp = new IcmpOutputPacket(bb);
+        	IcmpEchoReply icmp = new IcmpEchoReply(bb);
             InetAddress dst = ip.getSourceAddress();
             Subnet subnet = RoutingTable.getInstance().getSubnetByMasking(dst);
             

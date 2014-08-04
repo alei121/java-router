@@ -7,10 +7,10 @@ import code.messy.net.OutputPacket;
 import code.messy.net.ip.IpInputPacket;
 import code.messy.util.ByteHelper;
 
-public class IcmpOutputPacket implements OutputPacket {
+public class IcmpEchoReply implements OutputPacket {
 	private ByteBuffer icmp;
 
-	public IcmpOutputPacket(ByteBuffer request) {
+	public IcmpEchoReply(ByteBuffer request) {
 		int length = request.remaining();
         icmp = ByteBuffer.allocateDirect(length);
         

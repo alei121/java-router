@@ -136,7 +136,7 @@ public class RipProcessor {
             	Flow.traceStart();
                 Flow.trace("Rip2: 30 sec wakeup. network=" + direct);
                 
-                RipOutputPacket message = new RipOutputPacket(ripTable, direct);
+                RipResponse message = new RipResponse(ripTable, direct);
     			UdpOutputPacket udp = new UdpOutputPacket(520, 520, message);
     			IpOutputPacket ip = new IpOutputPacket(direct.getSrcAddress(), multicastAddress, IpInputPacket.Protocol.UDP, 1, udp);
     			direct.send(multicastAddress, ip);

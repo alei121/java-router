@@ -37,10 +37,11 @@ public class EthernetPort extends Thread implements Port, Registrable<Ethertype,
     }
     
     @Override
-    public void send(InputPacket packet) throws IOException {
-        ByteBuffer bb = packet.getByteBuffer();
-        bb.rewind();
-        socket.write(bb);
+    public void send(Payload payload) throws IOException {
+    	ArrayList<ByteBuffer> list = new ArrayList<ByteBuffer>();
+    	payload.getByteBuffers(list);
+    	ByteBuffer[] bbs = list.toArray(new ByteBuffer[list.size()]);
+        socket.write(bbs);
     }
 
     public void send(MacAddress dstMac, Ethertype type, Payload data) throws IOException {

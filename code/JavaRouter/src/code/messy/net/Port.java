@@ -6,6 +6,5 @@ package code.messy.net;
 import java.io.IOException;
 
 public interface Port {
-    // Functionality
-    public void send(InputPacket packet) throws IOException;
+    public void send(Payload payload) throws IOException;
 }

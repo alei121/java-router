@@ -7,17 +7,15 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import code.messy.net.Port;
-import code.messy.net.ip.IpHeader;
+import code.messy.net.ip.IpOutputPayload;
 import code.messy.net.ip.IpPacket;
 import code.messy.net.ip.route.LocalSubnet;
 import code.messy.net.ip.udp.UdpMapper;
-import code.messy.net.ip.udp.UdpHeader;
+import code.messy.net.ip.udp.UdpOutputPayload;
 import code.messy.util.Flow;
 
 /**
@@ -137,43 +135,13 @@ public class RipProcessor {
             // TODO check expired entries
             
             try {
+            	Flow.traceStart();
                 Flow.trace("Rip2: 30 sec wakeup. network=" + direct);
-
-                payload.clear();
-                payload.put((byte) 2);
-                payload.put((byte) 2);
-                payload.put((byte) 0);
-                payload.put((byte) 0);
-
-                Collection<RipEntry> entries = ripTable.getRipEntries();
-                for (RipEntry ripEntry : entries) {
-                    // Don't send back to where it is learned
-                    if (direct.getLink() != ripEntry.getPort()) {
-                        // IP
-                        payload.putShort((short) 2);
-                        // tag 0
-                        payload.putShort((short) 0);
-
-                        payload.put(ripEntry.getNetwork().getAddress()
-                                .getAddress());
-                        payload.put(ripEntry.getNetwork().getMask()
-                                .getAddress());
-
-                        // TODO put nexthop
-                        
-                        payload.putInt(0);
-                        payload.putInt(ripEntry.getMetric());
-                    }
-                }
-
-                payload.flip();
-                ByteBuffer[] bbs = new ByteBuffer[3];
-                bbs[2] = payload;
-                bbs[1] = UdpHeader.create(520, 520, bbs);
-                bbs[0] = IpHeader.create(direct.getSrcAddress(),
-                        multicastAddress, IpPacket.Protocol.UDP, 1, bbs);
-                direct.send(multicastAddress, bbs);
-
+                
+                RipMessage message = new RipMessage(ripTable, direct);
+    			UdpOutputPayload udp = new UdpOutputPayload(520, 520, message);
+    			IpOutputPayload ip = new IpOutputPayload(direct.getSrcAddress(), multicastAddress, IpPacket.Protocol.UDP, 1, udp);
+    			direct.send(multicastAddress, ip);
             } catch (IOException e) {
                 e.printStackTrace();
             }

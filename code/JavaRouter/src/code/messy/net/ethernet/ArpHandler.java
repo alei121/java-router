@@ -34,29 +34,8 @@ public class ArpHandler implements Receiver<EthernetInputPacket> {
 
     static void request(InetAddress srcAddress, InetAddress dstAddress,
             EthernetPort port) throws IOException {
-        ByteBuffer arp = ByteBuffer.allocateDirect(60);
-
-        // Ethernet
-        arp.putShort((short) 0x1);
-        // IP
-        arp.putShort((short) 0x800);
-        // size 6
-        arp.put((byte) 6);
-        // size 4
-        arp.put((byte) 4);
-        // ARP request
-        arp.putShort((short) 0x1);
-
-        arp.put(port.getMac().getAddress());
-        arp.put(srcAddress.getAddress());
-        arp.put(MacAddress.ZERO.getAddress());
-        arp.put(dstAddress.getAddress());
-
-        arp.flip();
-
-        ByteBuffer bbs[] = new ByteBuffer[1];
-        bbs[0] = arp;
-        port.send(MacAddress.BROADCAST, Ethertype.ARP, bbs);
+    	ArpRequest req = new ArpRequest(srcAddress, dstAddress, port.getMac());
+        port.send(MacAddress.BROADCAST, Ethertype.ARP, req);
     }
 
     @Override
@@ -104,32 +83,11 @@ public class ArpHandler implements Receiver<EthernetInputPacket> {
 
                 LocalSubnet subnet = LocalSubnet.getSubnet(targetAddress);
                 if (subnet != null && port == subnet.getLink().getPort()) {
-                    ByteBuffer arp = ByteBuffer.allocateDirect(60);
-
-                    // Ethernet
-                    arp.putShort((short) 0x1);
-                    // IP
-                    arp.putShort((short) 0x800);
-                    // size 6
-                    arp.put((byte) 6);
-                    // size 4
-                    arp.put((byte) 4);
-                    // ARP reply
-                    arp.putShort((short) 0x2);
-
-                    arp.put(port.getMac().getAddress());
-                    arp.put(targetAddress.getAddress());
-                    arp.put(senderMac.getAddress());
-                    arp.put(senderAddress.getAddress());
-
-                    arp.flip();
-
-                    Flow.trace("ArpHandler: response. ip=" + targetAddress
+                    Flow.trace("ArpHandler: Reply. ip=" + targetAddress
                             + " mac=" + port.getMac());
-                    
-                    ByteBuffer bbs[] = new ByteBuffer[1];
-                    bbs[0] = arp;
-                    port.send(senderMac, Ethertype.ARP, bbs);
+
+                    ArpReply reply = new ArpReply(senderAddress, targetAddress, senderMac, port.getMac());
+                    port.send(senderMac, Ethertype.ARP, reply);
                 }
             } catch (UnknownHostException e) {
                 e.printStackTrace();

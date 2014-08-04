@@ -10,7 +10,6 @@ import java.util.HashMap;
 
 import code.messy.Receiver;
 import code.messy.Registrable;
-import code.messy.net.InputPacket;
 import code.messy.net.Payload;
 import code.messy.net.Port;
 import code.messy.net.RawSocket;
@@ -53,39 +52,6 @@ public class EthernetPort extends Thread implements Port, Registrable<Ethertype,
         socket.write(bbs);
     }
 
-    public void send(MacAddress dstMac, Ethertype type, ByteBuffer[] payload) throws IOException {
-    	Flow.trace("EthernetPort.send: dst=" + dstMac + " type=" + type);
-        ByteBuffer header = ByteBuffer.allocateDirect(60);
-        header.put(dstMac.getAddress());
-        header.put(mac.getAddress());
-        header.putShort(type.getValue());
-        header.flip();
-        
-        ByteBuffer bbs[] = new ByteBuffer[payload.length + 1];
-        bbs[0] = header;
-        for (int i = 0; i < payload.length; i++) {
-            bbs[i + 1] = payload[i];
-        }
-        socket.write(bbs);
-    }
-    
-    public void send(MacAddress dstMac, Ethertype type, InputPacket packet) throws IOException {
-    	Flow.trace("EthernetPort.send: dst=" + dstMac + " type=" + type);
-        ByteBuffer header = ByteBuffer.allocateDirect(60);
-        header.put(dstMac.getAddress());
-        header.put(mac.getAddress());
-        header.putShort(type.getValue());
-        header.flip();
-
-        ByteBuffer payload = packet.getByteBuffer();
-        payload.position(packet.getDataOffset());
-        
-        ByteBuffer bbs[] = new ByteBuffer[2];
-        bbs[0] = header;
-        bbs[1] = payload;
-        socket.write(bbs);
-    }
-    
     // TODO new code using publisher and handler
     HashMap<Ethertype, Receiver<EthernetInputPacket>> map = new HashMap<Ethertype, Receiver<EthernetInputPacket>>();
     Receiver<EthernetInputPacket> defaultHandler = null;

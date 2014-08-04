@@ -3,15 +3,12 @@
  */
 package code.messy.net.ip;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 
 import code.messy.net.Packet;
 import code.messy.net.Port;
-import code.messy.net.ip.route.RoutingTable;
-import code.messy.net.ip.route.Subnet;
 
 public class IpPacket implements Packet {
     private Packet packet;
@@ -111,45 +108,6 @@ public class IpPacket implements Packet {
            sum = (sum & 0xFFFF) + (sum >> 16);
         }
         return (short)(~sum);
-    }
-
-    static public void send(InetAddress dstAddress, Protocol protocol, ByteBuffer payload) throws IOException {
-        System.out.println("IpPacket: send " + dstAddress + " protocol=" + protocol + " len=" + payload.remaining());
-        Subnet subnet = RoutingTable.getInstance().getSubnetByMasking(dstAddress);
-        
-        ByteBuffer header = ByteBuffer.allocateDirect(20);
-        
-        // start of ip header
-        header.put((byte)0x45);
-        header.put((byte)0x0);
-        // total length
-        header.putShort((short)(payload.remaining() + 20));
-        // id, flags and fragment offset
-        header.putShort((short)0);
-        header.putShort((short)0);
-        
-        // ttl
-        header.put((byte)64);
-        header.put(protocol.getValue());
-        
-        // header checksum. unknown now
-        header.putShort((short)0);
-        
-        // source
-        InetAddress srcAddress = subnet.getSrcAddress();
-        header.put(srcAddress.getAddress());
-        // dst
-        header.put(dstAddress.getAddress());
-        header.flip();
-
-        header.putShort(10, getChecksum(header, 0, 20));
-        header.rewind();
-
-        
-        ByteBuffer bbs[] = new ByteBuffer[2];
-        bbs[0] = header;
-        bbs[1] = payload;
-        subnet.send(dstAddress, bbs);
     }
 
     public enum Protocol {

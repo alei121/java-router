@@ -5,7 +5,6 @@ package code.messy.net.ip.rip2;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -121,7 +120,6 @@ public class RipProcessor {
 
     class Loop extends TimerTask {
         LocalSubnet direct;
-        ByteBuffer payload = ByteBuffer.allocateDirect(4 + 20 * 25);
 
         public Loop(LocalSubnet direct) {
             this.direct = direct;

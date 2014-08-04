@@ -35,9 +35,6 @@ public class EthernetPort extends Thread implements Port, Registrable<Ethertype,
     public String toString() {
         return "EthernetPort(port=" + port + ", mac=" + mac + ")";
     }
-
-    
-    // TODO remove this send(Packet)???
     
     @Override
     public void send(Packet packet) throws IOException {
@@ -45,47 +42,6 @@ public class EthernetPort extends Thread implements Port, Registrable<Ethertype,
         bb.rewind();
         socket.write(bb);
     }
-
-    @Override
-    public void send(ByteBuffer bb) throws IOException {
-        socket.write(bb);
-    }
-/*
-    @Override
-    public void send(InetAddress src, InetAddress dst, ByteBuffer[] payload)
-            throws IOException {
-        Dump.dumpIndent();
-        Dump.dump("EthernetPort: send src=" + src + " dst=" + dst);
-
-        MacAddress dstMac;
-        if (dst.isMulticastAddress()) {
-            dstMac = MacAddress.getMulticast(dst);
-        } else {
-            dstMac = ArpHandler.getAddress(src, dst, this);
-            if (dstMac == null) {
-                Dump.dump("Unknown mac for " + dst
-                        + ". Maybe ARP requesting.");
-                Dump.dumpDedent();
-                return;
-            }
-        }
-        ByteBuffer header = ByteBuffer.allocateDirect(14);
-        header.put(dstMac.getAddress());
-        header.put(mac.getAddress());
-        // TODO assuming v4 now
-        header.putShort((short) 0x800);
-
-        header.flip();
-
-        ByteBuffer bbs[] = new ByteBuffer[payload.length + 1];
-        bbs[0] = header;
-        for (int i = 0; i < payload.length; i++) {
-            bbs[i + 1] = payload[i];
-        }
-        socket.write(bbs);
-        Dump.dumpDedent();
-    }
-    */
 
     public void send(MacAddress dstMac, Ethertype type, OutputPayload data) throws IOException {
     	EthernetOutputPayload payload = new EthernetOutputPayload(mac, dstMac, type, data);

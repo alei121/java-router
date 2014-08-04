@@ -11,10 +11,10 @@ import java.util.HashMap;
 import java.util.List;
 
 import code.messy.Receiver;
-import code.messy.net.Packet;
+import code.messy.net.InputPacket;
 import code.messy.net.Payload;
 import code.messy.net.ip.IpLinkSupport;
-import code.messy.net.ip.IpPacket;
+import code.messy.net.ip.IpInputPacket;
 import code.messy.net.ip.NetworkNumber;
 import code.messy.util.Flow;
 
@@ -25,13 +25,13 @@ public class LocalSubnet implements Subnet {
     NetworkNumber network;
     InetAddress src;
     IpLinkSupport link;
-    Receiver<IpPacket> localHandler = null;
+    Receiver<IpInputPacket> localHandler = null;
     List<RemoteSubnet> remotes = new ArrayList<RemoteSubnet>();
     
     // TODO Use loopback() on port instead of localHandler
     // TODO Not sure why protected
     protected LocalSubnet(NetworkNumber network, InetAddress src,
-            IpLinkSupport link, Receiver<IpPacket> localHandler) {
+            IpLinkSupport link, Receiver<IpInputPacket> localHandler) {
         this.network = network;
         this.src = src;
         this.link = link;
@@ -39,7 +39,7 @@ public class LocalSubnet implements Subnet {
     }
 
     static public LocalSubnet create(NetworkNumber network, InetAddress src,
-            IpLinkSupport link, Receiver<IpPacket> localHandler) {
+            IpLinkSupport link, Receiver<IpInputPacket> localHandler) {
         LocalSubnet subnet = new LocalSubnet(network, src, link, localHandler);
         directs.add(subnet);
         addressSubnetMap.put(src, subnet);
@@ -54,7 +54,7 @@ public class LocalSubnet implements Subnet {
     }
     
     @Override
-    public void forward(IpPacket ip) throws IOException {
+    public void forward(IpInputPacket ip) throws IOException {
         InetAddress dst = ip.getDestinationAddress();
 
         // TODO why check all subnets? should it be this subnet?
@@ -68,7 +68,7 @@ public class LocalSubnet implements Subnet {
         } else {
             Flow.trace("LocalSubnet.forward dst=" + dst + " packet=" + ip);
 
-            Packet packet = ip.getPacket();
+            InputPacket packet = ip.getPacket();
             packet.getByteBuffer().position(packet.getDataOffset());
 
             ByteBuffer bbs[] = new ByteBuffer[1];

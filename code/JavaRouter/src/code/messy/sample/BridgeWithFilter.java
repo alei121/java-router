@@ -6,16 +6,16 @@ import java.util.List;
 import code.messy.Filter;
 import code.messy.Matcher;
 import code.messy.Receiver;
-import code.messy.net.ethernet.EthernetPacket;
+import code.messy.net.ethernet.EthernetInputPacket;
 import code.messy.net.ethernet.EthernetPort;
 import code.messy.net.ethernet.MacAddress;
 import code.messy.net.ethernet.bridge.Bridge;
 import code.messy.util.Flow;
 
 public class BridgeWithFilter {
-	static class BroadcastMatcher implements Matcher<EthernetPacket> {
+	static class BroadcastMatcher implements Matcher<EthernetInputPacket> {
 		@Override
-		public boolean match(EthernetPacket packet) {
+		public boolean match(EthernetInputPacket packet) {
 			if (MacAddress.BROADCAST.equals(packet.getDestinationAddress())) {
 				return true;
 			}
@@ -23,9 +23,9 @@ public class BridgeWithFilter {
 		}
 	}
 	
-	static class Printer implements Receiver<EthernetPacket> {
+	static class Printer implements Receiver<EthernetInputPacket> {
 		@Override
-		public void receive(EthernetPacket packet) {
+		public void receive(EthernetInputPacket packet) {
 			Flow.trace("Printer: packet=" + packet);
 		}
 	}
@@ -44,7 +44,7 @@ public class BridgeWithFilter {
         ports.add(new EthernetPort(args[1]));
     	Bridge bridge = new Bridge("MyBridge", ports);
 
-    	Filter<EthernetPacket> filter = new Filter<>(matcher, printer, bridge);
+    	Filter<EthernetInputPacket> filter = new Filter<>(matcher, printer, bridge);
 
         for (EthernetPort port : ports) {
 			port.register(filter);

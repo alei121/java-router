@@ -6,14 +6,14 @@ package code.messy.net.ip.udp;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
-import code.messy.net.OutputPayload;
+import code.messy.net.OutputPacket;
 import code.messy.util.Flow;
 import code.messy.util.PayloadHelper;
 
-public class UdpOutputPayload implements OutputPayload {
+public class UdpOutputPacket implements OutputPacket {
 	private ByteBuffer header;
-	private OutputPayload payload;
-	public UdpOutputPayload(int src, int dst, OutputPayload payload) {
+	private OutputPacket payload;
+	public UdpOutputPacket(int src, int dst, OutputPacket payload) {
         Flow.trace("UdpOutputPayload: src=" + src + " dst=" + dst);
 
 		this.payload = payload;

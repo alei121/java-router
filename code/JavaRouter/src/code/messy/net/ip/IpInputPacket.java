@@ -8,11 +8,11 @@ import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
-import code.messy.net.Packet;
+import code.messy.net.InputPacket;
 import code.messy.net.Port;
 
-public class IpPacket implements Packet {
-    private Packet packet;
+public class IpInputPacket implements InputPacket {
+    private InputPacket packet;
     private IpLinkSupport ipSupport;
 
     private InetAddress sourceAddress;
@@ -26,7 +26,7 @@ public class IpPacket implements Packet {
     private byte protocol;
     
 
-    public IpPacket(Packet packet, IpLinkSupport ipSupport) {
+    public IpInputPacket(InputPacket packet, IpLinkSupport ipSupport) {
         this.packet = packet;
         this.ipSupport = ipSupport;
         
@@ -84,7 +84,7 @@ public class IpPacket implements Packet {
     public void setVersion(int version) {
         this.version = version;
     }
-    public Packet getPacket() {
+    public InputPacket getPacket() {
         return packet;
     }
     public byte getProtocol() {

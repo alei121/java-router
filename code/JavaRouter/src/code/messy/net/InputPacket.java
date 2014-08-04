@@ -5,7 +5,7 @@ package code.messy.net;
 
 import java.nio.ByteBuffer;
 
-public interface Packet extends Payload {
+public interface InputPacket extends Payload {
     public int getDataOffset();
     public ByteBuffer getByteBuffer();
     public int getDataLength();

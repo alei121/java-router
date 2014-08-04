@@ -9,12 +9,12 @@ import java.util.List;
 
 import code.messy.Receiver;
 import code.messy.net.Port;
-import code.messy.net.ethernet.EthernetPacket;
+import code.messy.net.ethernet.EthernetInputPacket;
 import code.messy.net.ethernet.EthernetPort;
 import code.messy.net.ethernet.MacAddress;
 import code.messy.util.Flow;
 
-public class Bridge implements Receiver<EthernetPacket> {
+public class Bridge implements Receiver<EthernetInputPacket> {
     List<EthernetPort> ports = new ArrayList<EthernetPort>();
     LearnedMac learnedMac = new LearnedMac();
     String name;
@@ -24,7 +24,7 @@ public class Bridge implements Receiver<EthernetPacket> {
         this.ports = ports;
     }
 
-    void sendToOthers(EthernetPacket ep) throws IOException {
+    void sendToOthers(EthernetInputPacket ep) throws IOException {
     	Port port = ep.getPort();
         for (EthernetPort targetPort : ports) {
             if (targetPort != port) {
@@ -35,9 +35,9 @@ public class Bridge implements Receiver<EthernetPacket> {
     }
 
 	@Override
-	public void receive(EthernetPacket packet) {
+	public void receive(EthernetInputPacket packet) {
         try {
-        	EthernetPacket ep = (EthernetPacket)packet;
+        	EthernetInputPacket ep = (EthernetInputPacket)packet;
             MacAddress dstMac = ep.getDestinationAddress();
             MacAddress srcMac = ep.getSourceAddress();
             Port port = ep.getPort();

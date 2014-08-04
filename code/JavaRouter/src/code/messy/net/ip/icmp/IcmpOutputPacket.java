@@ -3,14 +3,14 @@ package code.messy.net.ip.icmp;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
-import code.messy.net.OutputPayload;
-import code.messy.net.ip.IpPacket;
+import code.messy.net.OutputPacket;
+import code.messy.net.ip.IpInputPacket;
 import code.messy.util.ByteHelper;
 
-public class IcmpOutputPayload implements OutputPayload {
+public class IcmpOutputPacket implements OutputPacket {
 	private ByteBuffer icmp;
 
-	public IcmpOutputPayload(ByteBuffer request) {
+	public IcmpOutputPacket(ByteBuffer request) {
 		int length = request.remaining();
         icmp = ByteBuffer.allocateDirect(length);
         
@@ -23,7 +23,7 @@ public class IcmpOutputPayload implements OutputPayload {
         // set checksum zero
         icmp.putShort(2, (short) 0);
         // recalculate checksum
-        icmp.putShort(2, IpPacket.getChecksum(icmp, 0, length));
+        icmp.putShort(2, IpInputPacket.getChecksum(icmp, 0, length));
 
         icmp.flip();
 	}

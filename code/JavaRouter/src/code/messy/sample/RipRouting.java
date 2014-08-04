@@ -10,7 +10,7 @@ import code.messy.net.ethernet.EthernetIpSupport;
 import code.messy.net.ethernet.EthernetPort;
 import code.messy.net.ethernet.Ethertype;
 import code.messy.net.ip.IpMapper;
-import code.messy.net.ip.IpPacket;
+import code.messy.net.ip.IpInputPacket;
 import code.messy.net.ip.NetworkNumber;
 import code.messy.net.ip.dhcp.DhcpHandler;
 import code.messy.net.ip.icmp.IcmpHandler;
@@ -39,12 +39,12 @@ public class RipRouting {
         UdpMapper udp = new UdpMapper();
 
         IpMapper ipCommonMapper = new IpMapper();
-        ipCommonMapper.register(IpPacket.Protocol.UDP, udp);
+        ipCommonMapper.register(IpInputPacket.Protocol.UDP, udp);
         ipCommonMapper.register(route);
 
         IcmpHandler icmp = new IcmpHandler();
         IpMapper ipLocalMapper = new IpMapper();
-        ipLocalMapper.register(IpPacket.Protocol.ICMP, icmp);
+        ipLocalMapper.register(IpInputPacket.Protocol.ICMP, icmp);
 
         RipProcessor rip = new RipProcessor(udp);
         
@@ -67,7 +67,7 @@ public class RipRouting {
             udpForBroadcast.add(IpAddressHelper.BROADCAST_ADDRESS, 67, dhcp);
             udp.add(ip, 67, dhcp);
             IpMapper ipBroadcastMapper = new IpMapper();
-            ipBroadcastMapper.register(IpAddressHelper.BROADCAST_ADDRESS, IpPacket.Protocol.UDP, udpForBroadcast);
+            ipBroadcastMapper.register(IpAddressHelper.BROADCAST_ADDRESS, IpInputPacket.Protocol.UDP, udpForBroadcast);
             ipBroadcastMapper.register(ipCommonMapper);
             
             ethip.register(ipBroadcastMapper);

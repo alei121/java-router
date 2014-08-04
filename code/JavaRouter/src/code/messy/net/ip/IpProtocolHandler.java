@@ -7,16 +7,16 @@ import java.util.HashMap;
 
 import code.messy.Receiver;
 import code.messy.Registrable;
-import code.messy.net.ip.IpPacket.Protocol;
+import code.messy.net.ip.IpInputPacket.Protocol;
 
-public class IpProtocolHandler implements Registrable<IpPacket.Protocol, Receiver<IpPacket>>, Receiver<IpPacket> {
-    HashMap<Byte, Receiver<IpPacket>> map = new HashMap<Byte, Receiver<IpPacket>>();
-    Receiver<IpPacket> defaultReceiver = null;
+public class IpProtocolHandler implements Registrable<IpInputPacket.Protocol, Receiver<IpInputPacket>>, Receiver<IpInputPacket> {
+    HashMap<Byte, Receiver<IpInputPacket>> map = new HashMap<Byte, Receiver<IpInputPacket>>();
+    Receiver<IpInputPacket> defaultReceiver = null;
 
     @Override
-    public void receive(IpPacket packet) {
+    public void receive(IpInputPacket packet) {
         Byte protocol = packet.getProtocol();
-        Receiver<IpPacket> ph = map.get(protocol);
+        Receiver<IpInputPacket> ph = map.get(protocol);
         if (ph != null) {
             ph.receive(packet);
         }
@@ -26,12 +26,12 @@ public class IpProtocolHandler implements Registrable<IpPacket.Protocol, Receive
     }
 
 	@Override
-	public void register(Protocol type, Receiver<IpPacket> handler) {
+	public void register(Protocol type, Receiver<IpInputPacket> handler) {
         map.put(type.getValue(), handler);
 	}
 
 	@Override
-	public void register(Receiver<IpPacket> handler) {
+	public void register(Receiver<IpInputPacket> handler) {
 		defaultReceiver = handler;
 	}
 }

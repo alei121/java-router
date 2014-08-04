@@ -6,19 +6,19 @@ package code.messy.net.ip.udp;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
-import code.messy.net.Packet;
+import code.messy.net.InputPacket;
 import code.messy.net.Port;
-import code.messy.net.ip.IpPacket;
+import code.messy.net.ip.IpInputPacket;
 
-public class UdpPacket implements Packet {
-    IpPacket ip;
+public class UdpInputPacket implements InputPacket {
+    IpInputPacket ip;
     int srcPort;
     int dstPort;
     int headerOffset;
     int dataOffset;
     int dataLength;
     
-    public UdpPacket(IpPacket ip) {
+    public UdpInputPacket(IpInputPacket ip) {
         this.ip = ip;
         
         ByteBuffer bb = ip.getByteBuffer();
@@ -34,7 +34,7 @@ public class UdpPacket implements Packet {
         return ip.getByteBuffer();
     }
 
-    public IpPacket getIp() {
+    public IpInputPacket getIp() {
         return ip;
     }
 

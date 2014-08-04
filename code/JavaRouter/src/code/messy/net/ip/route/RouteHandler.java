@@ -7,12 +7,12 @@ import java.io.IOException;
 import java.net.InetAddress;
 
 import code.messy.Receiver;
-import code.messy.net.ip.IpPacket;
+import code.messy.net.ip.IpInputPacket;
 import code.messy.util.Flow;
 
-public class RouteHandler implements Receiver<IpPacket> {
+public class RouteHandler implements Receiver<IpInputPacket> {
     @Override
-    public void receive(IpPacket ip) {
+    public void receive(IpInputPacket ip) {
         InetAddress dst = ip.getDestinationAddress();
         Subnet subnet = RoutingTable.getInstance().getSubnetByMasking(dst);
         Flow.trace("RouteHandler.receive dst=" + subnet);

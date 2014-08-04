@@ -12,7 +12,7 @@ import code.messy.net.ethernet.EthernetIpSupport;
 import code.messy.net.ethernet.EthernetPort;
 import code.messy.net.ethernet.Ethertype;
 import code.messy.net.ip.IpBroadcastHandler;
-import code.messy.net.ip.IpPacket;
+import code.messy.net.ip.IpInputPacket;
 import code.messy.net.ip.IpProtocolHandler;
 import code.messy.net.ip.NetworkNumber;
 import code.messy.net.ip.dhcp.DhcpHandler;
@@ -42,7 +42,7 @@ public class StaticRouting {
         IcmpHandler icmp = new IcmpHandler();
         EthernetPort eths[] = new EthernetPort[2];
         IpProtocolHandler protocol = new IpProtocolHandler();
-        protocol.register(IpPacket.Protocol.ICMP, icmp);
+        protocol.register(IpInputPacket.Protocol.ICMP, icmp);
     	
         for (int i = 0; i < 2; i++) {
         	eths[i] = new EthernetPort(args[i * 3]);

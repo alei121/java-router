@@ -4,13 +4,13 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-import code.messy.net.OutputPayload;
+import code.messy.net.OutputPacket;
 import code.messy.net.ip.dhcp.option.OptionIF;
 
-public class DhcpOutputPayload implements OutputPayload {
+public class DhcpOutputPacket implements OutputPacket {
 	private DhcpMessage message;
 
-	public DhcpOutputPayload(DhcpMessage message) {
+	public DhcpOutputPacket(DhcpMessage message) {
 		this.message = message;
 	}
 	

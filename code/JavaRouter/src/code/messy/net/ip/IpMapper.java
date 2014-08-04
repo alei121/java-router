@@ -8,19 +8,19 @@ import java.util.HashMap;
 
 import code.messy.Receiver;
 import code.messy.Registrable;
-import code.messy.net.ip.IpPacket.Protocol;
+import code.messy.net.ip.IpInputPacket.Protocol;
 
-public class IpMapper implements Registrable<IpPacket.Protocol, Receiver<IpPacket>>, Receiver<IpPacket> {
-    Receiver<IpPacket> defaultReceiver = null;
+public class IpMapper implements Registrable<IpInputPacket.Protocol, Receiver<IpInputPacket>>, Receiver<IpInputPacket> {
+    Receiver<IpInputPacket> defaultReceiver = null;
     
-    HashMap<Byte, TupleMap<Receiver<IpPacket>>> protocolMap = new HashMap<>();
+    HashMap<Byte, TupleMap<Receiver<IpInputPacket>>> protocolMap = new HashMap<>();
 
     @Override
-    public void receive(IpPacket ip) {
+    public void receive(IpInputPacket ip) {
         Byte protocol = ip.getProtocol();
-		TupleMap<Receiver<IpPacket>> tupleMap = protocolMap.get(protocol);
+		TupleMap<Receiver<IpInputPacket>> tupleMap = protocolMap.get(protocol);
 		if (tupleMap != null) {
-	        Receiver<IpPacket> ph = tupleMap.get(ip.getSourceAddress(), ip
+	        Receiver<IpInputPacket> ph = tupleMap.get(ip.getSourceAddress(), ip
 	                .getDestinationAddress(), 0, 0);
 	        if (ph != null) {
 	        	ph.receive(ip);
@@ -32,8 +32,8 @@ public class IpMapper implements Registrable<IpPacket.Protocol, Receiver<IpPacke
         }
     }
 
-	public void register(InetAddress dst, Protocol type, Receiver<IpPacket> handler) {
-		TupleMap<Receiver<IpPacket>> tupleMap = protocolMap.get(type);
+	public void register(InetAddress dst, Protocol type, Receiver<IpInputPacket> handler) {
+		TupleMap<Receiver<IpInputPacket>> tupleMap = protocolMap.get(type);
 		if (tupleMap == null) {
 			tupleMap = new TupleMap<>();
 			protocolMap.put(type.getValue(), tupleMap);
@@ -42,12 +42,12 @@ public class IpMapper implements Registrable<IpPacket.Protocol, Receiver<IpPacke
 	}
 	
 	@Override
-	public void register(Protocol type, Receiver<IpPacket> handler) {
+	public void register(Protocol type, Receiver<IpInputPacket> handler) {
 		register(null, type, handler);
 	}
 
 	@Override
-	public void register(Receiver<IpPacket> handler) {
+	public void register(Receiver<IpInputPacket> handler) {
 		defaultReceiver = handler;
 	}
 }

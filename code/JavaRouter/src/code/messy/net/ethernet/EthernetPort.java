@@ -10,13 +10,13 @@ import java.util.HashMap;
 
 import code.messy.Receiver;
 import code.messy.Registrable;
-import code.messy.net.Packet;
+import code.messy.net.InputPacket;
 import code.messy.net.Payload;
 import code.messy.net.Port;
 import code.messy.net.RawSocket;
 import code.messy.util.Flow;
 
-public class EthernetPort extends Thread implements Port, Registrable<Ethertype, Receiver<EthernetPacket>> {
+public class EthernetPort extends Thread implements Port, Registrable<Ethertype, Receiver<EthernetInputPacket>> {
     RawSocket socket;
     MacAddress mac;
     String port;
@@ -37,14 +37,14 @@ public class EthernetPort extends Thread implements Port, Registrable<Ethertype,
     }
     
     @Override
-    public void send(Packet packet) throws IOException {
+    public void send(InputPacket packet) throws IOException {
         ByteBuffer bb = packet.getByteBuffer();
         bb.rewind();
         socket.write(bb);
     }
 
     public void send(MacAddress dstMac, Ethertype type, Payload data) throws IOException {
-    	EthernetOutputPayload payload = new EthernetOutputPayload(mac, dstMac, type, data);
+    	EthernetOutputPacket payload = new EthernetOutputPacket(mac, dstMac, type, data);
     	
     	ArrayList<ByteBuffer> list = new ArrayList<ByteBuffer>();
     	payload.getByteBuffers(list);
@@ -68,7 +68,7 @@ public class EthernetPort extends Thread implements Port, Registrable<Ethertype,
         socket.write(bbs);
     }
     
-    public void send(MacAddress dstMac, Ethertype type, Packet packet) throws IOException {
+    public void send(MacAddress dstMac, Ethertype type, InputPacket packet) throws IOException {
     	Flow.trace("EthernetPort.send: dst=" + dstMac + " type=" + type);
         ByteBuffer header = ByteBuffer.allocateDirect(60);
         header.put(dstMac.getAddress());
@@ -86,16 +86,16 @@ public class EthernetPort extends Thread implements Port, Registrable<Ethertype,
     }
     
     // TODO new code using publisher and handler
-    HashMap<Ethertype, Receiver<EthernetPacket>> map = new HashMap<Ethertype, Receiver<EthernetPacket>>();
-    Receiver<EthernetPacket> defaultHandler = null;
+    HashMap<Ethertype, Receiver<EthernetInputPacket>> map = new HashMap<Ethertype, Receiver<EthernetInputPacket>>();
+    Receiver<EthernetInputPacket> defaultHandler = null;
     
 	@Override
-	public void register(Ethertype type, Receiver<EthernetPacket> handler) {
+	public void register(Ethertype type, Receiver<EthernetInputPacket> handler) {
         map.put(type, handler);
 	}
 
 	@Override
-	public void register(Receiver<EthernetPacket> handler) {
+	public void register(Receiver<EthernetInputPacket> handler) {
 		defaultHandler = handler;
 	}
 
@@ -106,11 +106,11 @@ public class EthernetPort extends Thread implements Port, Registrable<Ethertype,
                 ByteBuffer bb = ByteBuffer.allocateDirect(2048);
                 socket.read(bb);
                 bb.flip();
-        		EthernetPacket ep = new EthernetPacket(bb, this);
+        		EthernetInputPacket ep = new EthernetInputPacket(bb, this);
         		
         		Flow.traceStart();
         		Flow.trace("EthernetPort port=" + port + " src=" + ep.getSourceAddress());
-        		Receiver<EthernetPacket> ph = map.get(ep.getEthertype());
+        		Receiver<EthernetInputPacket> ph = map.get(ep.getEthertype());
                 if (ph != null) {
                     ph.receive(ep);
                 } else if (defaultHandler != null) {

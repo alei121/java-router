@@ -6,10 +6,10 @@ package code.messy.net.ethernet;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
-import code.messy.net.Packet;
+import code.messy.net.InputPacket;
 import code.messy.net.Port;
 
-public class EthernetPacket implements Packet {
+public class EthernetInputPacket implements InputPacket {
     EthernetPort port;
     ByteBuffer bb;
     int dataOffset;
@@ -20,7 +20,7 @@ public class EthernetPacket implements Packet {
     Ethertype ethertype;
 
     
-    public EthernetPacket(ByteBuffer bb, EthernetPort port) {
+    public EthernetInputPacket(ByteBuffer bb, EthernetPort port) {
     	this.port = port;
     	this.bb = bb;
     	bb.position(0);

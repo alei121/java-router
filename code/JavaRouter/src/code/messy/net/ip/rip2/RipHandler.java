@@ -11,10 +11,10 @@ import java.util.HashSet;
 
 import code.messy.Receiver;
 import code.messy.net.ip.NetworkNumber;
-import code.messy.net.ip.udp.UdpPacket;
+import code.messy.net.ip.udp.UdpInputPacket;
 import code.messy.util.Flow;
 
-public class RipHandler implements Receiver<UdpPacket> {
+public class RipHandler implements Receiver<UdpInputPacket> {
     HashSet<RipEntry> ripEntries = new HashSet<RipEntry>();
     
     InetAddress zeroAddress;
@@ -34,7 +34,7 @@ public class RipHandler implements Receiver<UdpPacket> {
     }
 
     @Override
-    public void receive(UdpPacket udp) {
+    public void receive(UdpInputPacket udp) {
         Flow.trace("RipHandler: handling...");
 
         try {

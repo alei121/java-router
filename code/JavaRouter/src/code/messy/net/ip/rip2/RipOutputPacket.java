@@ -4,13 +4,13 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import code.messy.net.OutputPayload;
+import code.messy.net.OutputPacket;
 import code.messy.net.ip.route.LocalSubnet;
 
-public class RipMessage implements OutputPayload {
+public class RipOutputPacket implements OutputPacket {
     ByteBuffer payload = ByteBuffer.allocateDirect(4 + 20 * 25);
 
-    public RipMessage(RipTable ripTable, LocalSubnet direct) {
+    public RipOutputPacket(RipTable ripTable, LocalSubnet direct) {
         payload.put((byte) 2);
         payload.put((byte) 2);
         payload.put((byte) 0);

@@ -14,5 +14,5 @@ public interface IpLinkSupport {
 	public void send(InetAddress src, InetAddress dst, Payload payload) throws IOException;
 
     public Port getPort();
-	public void register(Receiver<IpPacket> receiver);
+	public void register(Receiver<IpInputPacket> receiver);
 }

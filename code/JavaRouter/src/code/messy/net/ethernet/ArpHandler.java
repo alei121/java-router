@@ -14,7 +14,7 @@ import code.messy.Receiver;
 import code.messy.net.ip.route.LocalSubnet;
 import code.messy.util.Flow;
 
-public class ArpHandler implements Receiver<EthernetPacket> {
+public class ArpHandler implements Receiver<EthernetInputPacket> {
 
     static HashMap<InetAddress, MacAddress> map = new HashMap<InetAddress, MacAddress>();
 
@@ -60,7 +60,7 @@ public class ArpHandler implements Receiver<EthernetPacket> {
     }
 
     @Override
-    public void receive(EthernetPacket packet) {
+    public void receive(EthernetInputPacket packet) {
         ByteBuffer bb = packet.getByteBuffer();
         int offset = packet.getDataOffset();
         bb.position(offset);

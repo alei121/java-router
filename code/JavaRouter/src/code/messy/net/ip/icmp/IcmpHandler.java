@@ -8,15 +8,15 @@ import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
 import code.messy.Receiver;
-import code.messy.net.ip.IpOutputPayload;
-import code.messy.net.ip.IpPacket;
+import code.messy.net.ip.IpOutputPacket;
+import code.messy.net.ip.IpInputPacket;
 import code.messy.net.ip.route.RoutingTable;
 import code.messy.net.ip.route.Subnet;
 import code.messy.util.Flow;
 
-public class IcmpHandler implements Receiver<IpPacket> {
+public class IcmpHandler implements Receiver<IpInputPacket> {
     @Override
-    public void receive(IpPacket ip) {
+    public void receive(IpInputPacket ip) {
         ByteBuffer bb = ip.getByteBuffer();
         int offset = ip.getDataOffset();
         int length = ip.getDataLength();
@@ -27,7 +27,7 @@ public class IcmpHandler implements Receiver<IpPacket> {
             Flow.trace("IcmpHandler: Unsupported operation");
             return;
         }
-        if (IpPacket.getChecksum(bb, offset, length) != 0) {
+        if (IpInputPacket.getChecksum(bb, offset, length) != 0) {
             Flow.trace("IcmpHandler: Invalid ICMP checksum");
             return;
         }
@@ -35,12 +35,12 @@ public class IcmpHandler implements Receiver<IpPacket> {
         Flow.trace("IcmpHandler: echo request. Length=" + length);
         try {
         	bb.position(offset);
-        	IcmpOutputPayload icmp = new IcmpOutputPayload(bb);
+        	IcmpOutputPacket icmp = new IcmpOutputPacket(bb);
             InetAddress dst = ip.getSourceAddress();
             Subnet subnet = RoutingTable.getInstance().getSubnetByMasking(dst);
             
-            IpOutputPayload output = new IpOutputPayload(subnet.getSrcAddress(),
-                    dst, IpPacket.Protocol.ICMP, icmp);
+            IpOutputPacket output = new IpOutputPacket(subnet.getSrcAddress(),
+                    dst, IpInputPacket.Protocol.ICMP, icmp);
             subnet.send(dst, output);
         } catch (IOException e) {
             e.printStackTrace();

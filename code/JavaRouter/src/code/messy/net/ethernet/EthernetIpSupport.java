@@ -6,7 +6,7 @@ import java.net.InetAddress;
 import code.messy.Receiver;
 import code.messy.net.Payload;
 import code.messy.net.ip.IpLinkSupport;
-import code.messy.net.ip.IpPacket;
+import code.messy.net.ip.IpInputPacket;
 import code.messy.util.Flow;
 import code.messy.util.IpAddressHelper;
 
@@ -28,7 +28,7 @@ public class EthernetIpSupport implements IpLinkSupport {
     }
 	
     @Override
-    public void register(Receiver<IpPacket> receiver) {
+    public void register(Receiver<IpInputPacket> receiver) {
     	port.register(Ethertype.IP, new PacketToIp(receiver));
     }
 
@@ -54,16 +54,16 @@ public class EthernetIpSupport implements IpLinkSupport {
         port.send(dstMac, Ethertype.IP, payload);
 	}
 
-    class PacketToIp implements Receiver<EthernetPacket> {
-    	Receiver<IpPacket> receiver;
+    class PacketToIp implements Receiver<EthernetInputPacket> {
+    	Receiver<IpInputPacket> receiver;
     	
-    	public PacketToIp(Receiver<IpPacket> receiver) {
+    	public PacketToIp(Receiver<IpInputPacket> receiver) {
     		this.receiver = receiver;
 		}
     	
 		@Override
-		public void receive(EthernetPacket packet) {
-			IpPacket ip = new IpPacket(packet, EthernetIpSupport.this);
+		public void receive(EthernetInputPacket packet) {
+			IpInputPacket ip = new IpInputPacket(packet, EthernetIpSupport.this);
 			Flow.trace("EthernetIpSupport.receive: src="
 					+ ip.getSourceAddress() + " dst="
 					+ ip.getDestinationAddress());

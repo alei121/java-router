@@ -7,15 +7,15 @@ import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
-import code.messy.net.OutputPayload;
+import code.messy.net.OutputPacket;
 import code.messy.util.Flow;
 import code.messy.util.PayloadHelper;
 
-public class IpOutputPayload implements OutputPayload {
+public class IpOutputPacket implements OutputPacket {
 	private ByteBuffer header;
-	private OutputPayload data;
+	private OutputPacket data;
 	
-	public IpOutputPayload(InetAddress src, InetAddress dst, IpPacket.Protocol protocol, int ttl, OutputPayload data) {
+	public IpOutputPacket(InetAddress src, InetAddress dst, IpInputPacket.Protocol protocol, int ttl, OutputPacket data) {
         Flow.trace("IpOutputPayload: src=" + src + " dst=" + dst + " protocol=" + protocol);
         
 		this.data = data;
@@ -47,11 +47,11 @@ public class IpOutputPayload implements OutputPayload {
         header.flip();
 
         // Checksum now
-        header.putShort(10, IpPacket.getChecksum(header, 0, 20));
+        header.putShort(10, IpInputPacket.getChecksum(header, 0, 20));
         header.flip();
 	}
 	
-    public IpOutputPayload(InetAddress src, InetAddress dst, IpPacket.Protocol protocol, OutputPayload data) {
+    public IpOutputPacket(InetAddress src, InetAddress dst, IpInputPacket.Protocol protocol, OutputPacket data) {
     	// TTL 64
     	this(src, dst, protocol, 64, data);
 	}

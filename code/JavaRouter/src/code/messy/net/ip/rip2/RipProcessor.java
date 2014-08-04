@@ -10,11 +10,11 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import code.messy.net.ip.IpOutputPayload;
-import code.messy.net.ip.IpPacket;
+import code.messy.net.ip.IpOutputPacket;
+import code.messy.net.ip.IpInputPacket;
 import code.messy.net.ip.route.LocalSubnet;
 import code.messy.net.ip.udp.UdpMapper;
-import code.messy.net.ip.udp.UdpOutputPayload;
+import code.messy.net.ip.udp.UdpOutputPacket;
 import code.messy.util.Flow;
 
 /**
@@ -136,9 +136,9 @@ public class RipProcessor {
             	Flow.traceStart();
                 Flow.trace("Rip2: 30 sec wakeup. network=" + direct);
                 
-                RipMessage message = new RipMessage(ripTable, direct);
-    			UdpOutputPayload udp = new UdpOutputPayload(520, 520, message);
-    			IpOutputPayload ip = new IpOutputPayload(direct.getSrcAddress(), multicastAddress, IpPacket.Protocol.UDP, 1, udp);
+                RipOutputPacket message = new RipOutputPacket(ripTable, direct);
+    			UdpOutputPacket udp = new UdpOutputPacket(520, 520, message);
+    			IpOutputPacket ip = new IpOutputPacket(direct.getSrcAddress(), multicastAddress, IpInputPacket.Protocol.UDP, 1, udp);
     			direct.send(multicastAddress, ip);
             } catch (IOException e) {
                 e.printStackTrace();

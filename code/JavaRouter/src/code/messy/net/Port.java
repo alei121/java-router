@@ -7,5 +7,5 @@ import java.io.IOException;
 
 public interface Port {
     // Functionality
-    public void send(Packet packet) throws IOException;
+    public void send(InputPacket packet) throws IOException;
 }

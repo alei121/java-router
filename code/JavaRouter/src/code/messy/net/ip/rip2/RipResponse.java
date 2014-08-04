@@ -40,7 +40,7 @@ public class RipResponse implements OutputPacket {
 	}
     
 	@Override
-	public void getByteBuffers(ArrayList<ByteBuffer> bbs) {
+	public void getOutput(ArrayList<ByteBuffer> bbs) {
 		bbs.add(payload);
 	}
 }

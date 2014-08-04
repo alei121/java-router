@@ -32,8 +32,8 @@ public class UdpOutputPacket implements OutputPacket {
 	}
 
 	@Override
-	public void getByteBuffers(ArrayList<ByteBuffer> bbs) {
+	public void getOutput(ArrayList<ByteBuffer> bbs) {
         bbs.add(header);
-        payload.getByteBuffers(bbs);
+        payload.getOutput(bbs);
 	}
 }

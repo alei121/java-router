@@ -32,7 +32,7 @@ public class DhcpOutputPacket implements OutputPacket {
 	}
 	
 	@Override
-	public void getByteBuffers(ArrayList<ByteBuffer> bbs) {
+	public void getOutput(ArrayList<ByteBuffer> bbs) {
 		// TODO getPayload causes dhcp message to be reconstructed.
 		// TODO maybe more efficient as immutable
 		bbs.add(message.getPayload());

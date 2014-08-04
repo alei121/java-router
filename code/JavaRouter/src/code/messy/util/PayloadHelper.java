@@ -8,7 +8,7 @@ import code.messy.net.OutputPacket;
 public class PayloadHelper {
 	public static int getLength(OutputPacket payload) {
 		ArrayList<ByteBuffer> bbs = new ArrayList<>();
-		payload.getByteBuffers(bbs);
+		payload.getOutput(bbs);
 
 		int remain = 0;
 		for (ByteBuffer bb : bbs) {

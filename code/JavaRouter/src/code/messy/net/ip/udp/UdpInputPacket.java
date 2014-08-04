@@ -72,7 +72,7 @@ public class UdpInputPacket implements InputPacket {
     }
 
 	@Override
-	public void getByteBuffers(ArrayList<ByteBuffer> bbs) {
+	public void getOutput(ArrayList<ByteBuffer> bbs) {
 		// TODO maybe the same bb used by ip and eth
         ByteBuffer bb = ip.getByteBuffer();
         bb.position(headerOffset);

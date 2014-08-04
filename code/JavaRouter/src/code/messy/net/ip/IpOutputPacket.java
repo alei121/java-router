@@ -58,8 +58,8 @@ public class IpOutputPacket implements OutputPacket {
     
 
 	@Override
-	public void getByteBuffers(ArrayList<ByteBuffer> bbs) {
+	public void getOutput(ArrayList<ByteBuffer> bbs) {
 		bbs.add(header);
-		data.getByteBuffers(bbs);
+		data.getOutput(bbs);
 	}
 }

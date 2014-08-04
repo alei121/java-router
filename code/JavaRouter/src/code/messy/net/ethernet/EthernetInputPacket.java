@@ -80,7 +80,7 @@ public class EthernetInputPacket implements InputPacket {
     }
 
 	@Override
-	public void getByteBuffers(ArrayList<ByteBuffer> bbs) {
+	public void getOutput(ArrayList<ByteBuffer> bbs) {
 		bb.position(0);
 		bbs.add(bb);
 	}

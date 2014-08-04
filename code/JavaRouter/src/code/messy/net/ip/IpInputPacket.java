@@ -167,7 +167,7 @@ public class IpInputPacket implements InputPacket {
     }
 
 	@Override
-	public void getByteBuffers(ArrayList<ByteBuffer> bbs) {
+	public void getOutput(ArrayList<ByteBuffer> bbs) {
 		// TODO maybe the same bb used by eth
         ByteBuffer bb = packet.getByteBuffer();
         bb.position(headerOffset);

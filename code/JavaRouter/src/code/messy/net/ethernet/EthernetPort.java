@@ -38,7 +38,7 @@ public class EthernetPort extends Thread implements Port, Registrable<Ethertype,
     @Override
     public void send(Payload payload) throws IOException {
     	ArrayList<ByteBuffer> list = new ArrayList<ByteBuffer>();
-    	payload.getByteBuffers(list);
+    	payload.getOutput(list);
     	ByteBuffer[] bbs = list.toArray(new ByteBuffer[list.size()]);
         socket.write(bbs);
     }
@@ -47,7 +47,7 @@ public class EthernetPort extends Thread implements Port, Registrable<Ethertype,
     	EthernetOutputPacket payload = new EthernetOutputPacket(mac, dstMac, type, data);
     	
     	ArrayList<ByteBuffer> list = new ArrayList<ByteBuffer>();
-    	payload.getByteBuffers(list);
+    	payload.getOutput(list);
     	ByteBuffer[] bbs = list.toArray(new ByteBuffer[list.size()]);
         socket.write(bbs);
     }

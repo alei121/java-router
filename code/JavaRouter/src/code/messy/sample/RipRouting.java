@@ -76,7 +76,7 @@ public class RipRouting {
             eths[i].register(Ethertype.ARP, new ArpHandler());
         }
         
-        
+        rip.start();
         
         
         

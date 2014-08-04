@@ -6,7 +6,7 @@ package code.messy.net.ip.route;
 import java.io.IOException;
 import java.net.InetAddress;
 
-import code.messy.net.OutputPayload;
+import code.messy.net.Payload;
 import code.messy.net.ip.IpPacket;
 import code.messy.net.ip.NetworkNumber;
 import code.messy.util.Flow;
@@ -32,7 +32,7 @@ public class RemoteSubnet implements Subnet {
     @Override
     public void forward(IpPacket ip) throws IOException {
         Flow.trace("RemoteSubnet: forward dst=" + ip.getDestinationAddress());
-        direct.forward(nextHop, ip);
+        direct.send(nextHop, ip);
     }
 
     @Override
@@ -41,7 +41,7 @@ public class RemoteSubnet implements Subnet {
     }
 
     @Override
-    public void send(InetAddress dst, OutputPayload payload) throws IOException {
+    public void send(InetAddress dst, Payload payload) throws IOException {
         // Ignoring dst and using nexthop
         direct.send(nextHop, payload);
     }

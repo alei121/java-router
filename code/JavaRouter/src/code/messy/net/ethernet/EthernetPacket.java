@@ -4,6 +4,7 @@
 package code.messy.net.ethernet;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 
 import code.messy.net.Packet;
 import code.messy.net.Port;
@@ -77,5 +78,11 @@ public class EthernetPacket implements Packet {
     public String toString() {
         return "[EthernetPacket port=" + port + " src=" + sourceAddress + " dst=" + destinationAddress + "]";
     }
+
+	@Override
+	public void getByteBuffers(ArrayList<ByteBuffer> bbs) {
+		bb.position(0);
+		bbs.add(bb);
+	}
 
 }

@@ -4,6 +4,7 @@
 package code.messy.net.ip.udp;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 
 import code.messy.net.Packet;
 import code.messy.net.Port;
@@ -69,4 +70,12 @@ public class UdpPacket implements Packet {
     public long getTimestamp() {
         return ip.getTimestamp();
     }
+
+	@Override
+	public void getByteBuffers(ArrayList<ByteBuffer> bbs) {
+		// TODO maybe the same bb used by ip and eth
+        ByteBuffer bb = ip.getByteBuffer();
+        bb.position(headerOffset);
+        bbs.add(bb);
+	}
 }

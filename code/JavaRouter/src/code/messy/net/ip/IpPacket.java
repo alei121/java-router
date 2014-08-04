@@ -6,6 +6,7 @@ package code.messy.net.ip;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 
 import code.messy.net.Packet;
 import code.messy.net.Port;
@@ -164,4 +165,12 @@ public class IpPacket implements Packet {
     public String toString() {
     	return "IpPacket(src=" + sourceAddress + ", dst=" + destinationAddress + ")";
     }
+
+	@Override
+	public void getByteBuffers(ArrayList<ByteBuffer> bbs) {
+		// TODO maybe the same bb used by eth
+        ByteBuffer bb = packet.getByteBuffer();
+        bb.position(headerOffset);
+        bbs.add(bb);
+	}
 }

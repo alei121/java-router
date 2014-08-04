@@ -10,8 +10,8 @@ import java.util.HashMap;
 
 import code.messy.Receiver;
 import code.messy.Registrable;
-import code.messy.net.OutputPayload;
 import code.messy.net.Packet;
+import code.messy.net.Payload;
 import code.messy.net.Port;
 import code.messy.net.RawSocket;
 import code.messy.util.Flow;
@@ -43,7 +43,7 @@ public class EthernetPort extends Thread implements Port, Registrable<Ethertype,
         socket.write(bb);
     }
 
-    public void send(MacAddress dstMac, Ethertype type, OutputPayload data) throws IOException {
+    public void send(MacAddress dstMac, Ethertype type, Payload data) throws IOException {
     	EthernetOutputPayload payload = new EthernetOutputPayload(mac, dstMac, type, data);
     	
     	ArrayList<ByteBuffer> list = new ArrayList<ByteBuffer>();

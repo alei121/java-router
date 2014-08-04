@@ -11,8 +11,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import code.messy.Receiver;
-import code.messy.net.OutputPayload;
 import code.messy.net.Packet;
+import code.messy.net.Payload;
 import code.messy.net.ip.IpLinkSupport;
 import code.messy.net.ip.IpPacket;
 import code.messy.net.ip.NetworkNumber;
@@ -27,8 +27,6 @@ public class LocalSubnet implements Subnet {
     IpLinkSupport link;
     Receiver<IpPacket> localHandler = null;
     List<RemoteSubnet> remotes = new ArrayList<RemoteSubnet>();
-
-
     
     // TODO Use loopback() on port instead of localHandler
     // TODO Not sure why protected
@@ -59,6 +57,7 @@ public class LocalSubnet implements Subnet {
     public void forward(IpPacket ip) throws IOException {
         InetAddress dst = ip.getDestinationAddress();
 
+        // TODO why check all subnets? should it be this subnet?
         if (addressSubnetMap.containsKey(dst)) {
             Flow.trace("LocalSubnet: locally addressed. packet=" + ip);
             if (localHandler != null) {
@@ -78,18 +77,13 @@ public class LocalSubnet implements Subnet {
         }
     }
 
-    public void forward(InetAddress gw, IpPacket ip) throws IOException {
-        // TODO need to handle case where locally addressed. like ping its own address.
-        link.send(gw, ip);
-    }
-
     @Override
     public InetAddress getSrcAddress() {
         return src;
     }
 
     @Override
-    public void send(InetAddress dst, OutputPayload payload) throws IOException {
+    public void send(InetAddress dst, Payload payload) throws IOException {
         Flow.trace("LocalSubnet: send dst=" + dst);
         link.send(src, dst, payload);
     }

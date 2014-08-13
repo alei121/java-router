@@ -9,10 +9,9 @@ import code.messy.net.ethernet.ArpHandler;
 import code.messy.net.ethernet.EthernetIpPort;
 import code.messy.net.ethernet.EthernetPort;
 import code.messy.net.ethernet.Ethertype;
-import code.messy.net.ip.IpInputPacket;
 import code.messy.net.ip.IpMapper;
 import code.messy.net.ip.NetworkNumber;
-import code.messy.net.ip.IpInputPacket.Protocol;
+import code.messy.net.ip.Protocol;
 import code.messy.net.ip.dhcp.DhcpProcessor;
 import code.messy.net.ip.icmp.IcmpHandler;
 import code.messy.net.ip.rip2.RipProcessor;
@@ -38,7 +37,7 @@ public class RipRouter {
         udp.register(IpAddressHelper.BROADCAST_ADDRESS, 67, dhcp);
 
         IpMapper ipCommonMapper = new IpMapper();
-        ipCommonMapper.register(IpInputPacket.Protocol.UDP, udp);
+        ipCommonMapper.register(Protocol.UDP, udp);
         ipCommonMapper.register(route);
 
         IcmpHandler icmp = new IcmpHandler();

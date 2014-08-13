@@ -8,7 +8,6 @@ import java.util.HashMap;
 
 import code.messy.Receiver;
 import code.messy.Registrable;
-import code.messy.net.ip.IpInputPacket.Protocol;
 import code.messy.util.IpAddressHelper;
 
 /**
@@ -16,7 +15,7 @@ import code.messy.util.IpAddressHelper;
  * 
  * @author alei
  */
-public class IpMapper implements Registrable<IpInputPacket.Protocol, Receiver<IpInputPacket>>, Receiver<IpInputPacket> {
+public class IpMapper implements Registrable<Protocol, Receiver<IpInputPacket>>, Receiver<IpInputPacket> {
     Receiver<IpInputPacket> defaultReceiver = null;
     
     HashMap<Protocol, NetworkMap<Receiver<IpInputPacket>>> protocolMap = new HashMap<>();

@@ -15,7 +15,7 @@ public class IpOutputPacket implements OutputPacket {
 	private ByteBuffer header;
 	private OutputPacket data;
 	
-	public IpOutputPacket(InetAddress src, InetAddress dst, IpInputPacket.Protocol protocol, int ttl, OutputPacket data) {
+	public IpOutputPacket(InetAddress src, InetAddress dst, Protocol protocol, int ttl, OutputPacket data) {
         Flow.trace("IpOutputPayload: src=" + src + " dst=" + dst + " protocol=" + protocol);
         
 		this.data = data;
@@ -51,7 +51,7 @@ public class IpOutputPacket implements OutputPacket {
         header.flip();
 	}
 	
-    public IpOutputPacket(InetAddress src, InetAddress dst, IpInputPacket.Protocol protocol, OutputPacket data) {
+    public IpOutputPacket(InetAddress src, InetAddress dst, Protocol protocol, OutputPacket data) {
     	// TTL 64
     	this(src, dst, protocol, 64, data);
 	}

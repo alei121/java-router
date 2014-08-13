@@ -7,8 +7,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import code.messy.net.InputPacket;
 import code.messy.net.Port;
@@ -108,36 +106,6 @@ public class IpInputPacket implements InputPacket {
            sum = (sum & 0xFFFF) + (sum >> 16);
         }
         return (short)(~sum);
-    }
-
-    public enum Protocol {
-    	UNKNOWN ((byte)-1),
-        ICMP ((byte)1),
-        TCP ((byte)6),
-        UDP ((byte)17);
-        
-        private byte value;
-        
-        private static Map<Byte, Protocol> mapOfValueToProtocol = new HashMap<Byte, IpInputPacket.Protocol>();
-        static {
-        	for (Protocol protocol : Protocol.values()) {
-        		mapOfValueToProtocol.put(protocol.getValue(), protocol);
-        	}
-        }
-        
-        Protocol(byte value) {
-            this.value = value;
-        }
-        
-        public byte getValue() {
-            return value;
-        }
-        
-        public static Protocol getProtocol(Byte b) {
-        	Protocol protocol = mapOfValueToProtocol.get(b);
-        	if (protocol != null) return protocol;
-        	return UNKNOWN;
-        }
     }
 
     @Override

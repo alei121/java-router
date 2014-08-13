@@ -12,9 +12,9 @@ import code.messy.net.ethernet.EthernetInputPacket;
 import code.messy.net.ethernet.EthernetPort;
 import code.messy.net.ethernet.Ethertype;
 import code.messy.net.ethernet.MacAddress;
-import code.messy.net.ip.IpInputPacket;
 import code.messy.net.ip.IpOutputPacket;
 import code.messy.net.ip.NetworkNumber;
+import code.messy.net.ip.Protocol;
 import code.messy.net.ip.dhcp.option.DHCPMessageType;
 import code.messy.net.ip.dhcp.option.IPAddressLeaseTime;
 import code.messy.net.ip.dhcp.option.OptionIF;
@@ -68,7 +68,7 @@ public class DhcpEntry {
 		try {
 			DhcpOutputPacket dhcp = new DhcpOutputPacket(message);
 			UdpOutputPacket udp = new UdpOutputPacket(67, 68, dhcp);
-			IpOutputPacket ip = new IpOutputPacket(gateway, IpAddressHelper.BROADCAST_ADDRESS, IpInputPacket.Protocol.UDP, 1, udp);
+			IpOutputPacket ip = new IpOutputPacket(gateway, IpAddressHelper.BROADCAST_ADDRESS, Protocol.UDP, 1, udp);
 			
 			EthernetPort port = (EthernetPort)udpPacket.getPort();
 			EthernetInputPacket packet = (EthernetInputPacket)udpPacket.getIp().getPacket();

@@ -10,6 +10,7 @@ import java.nio.ByteBuffer;
 import code.messy.Receiver;
 import code.messy.net.ip.IpOutputPacket;
 import code.messy.net.ip.IpInputPacket;
+import code.messy.net.ip.Protocol;
 import code.messy.net.ip.route.RoutingTable;
 import code.messy.net.ip.route.Subnet;
 import code.messy.util.Flow;
@@ -40,7 +41,7 @@ public class IcmpHandler implements Receiver<IpInputPacket> {
             Subnet subnet = RoutingTable.getInstance().getSubnetByMasking(dst);
             
             IpOutputPacket output = new IpOutputPacket(subnet.getSrcAddress(),
-                    dst, IpInputPacket.Protocol.ICMP, icmp);
+                    dst, Protocol.ICMP, icmp);
             subnet.send(dst, output);
         } catch (IOException e) {
             e.printStackTrace();

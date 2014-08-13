@@ -8,9 +8,8 @@ import java.util.Map;
 
 import code.messy.Receiver;
 import code.messy.Registrable;
-import code.messy.net.ip.IpInputPacket.Protocol;
 
-public class IpProtocolHandler implements Registrable<IpInputPacket.Protocol, Receiver<IpInputPacket>>, Receiver<IpInputPacket> {
+public class IpProtocolHandler implements Registrable<Protocol, Receiver<IpInputPacket>>, Receiver<IpInputPacket> {
     Map<Protocol, Receiver<IpInputPacket>> map = new HashMap<>();
     Receiver<IpInputPacket> defaultReceiver = null;
 

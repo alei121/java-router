@@ -20,7 +20,7 @@ public class UdpMapper implements Receiver<IpInputPacket> {
     Receiver<IpInputPacket> ipReceiver;
     TupleMap<Receiver<UdpInputPacket>> tupleMap = new TupleMap<Receiver<UdpInputPacket>>();
 
-    public void add(InetAddress dstAddress, int dstPort, Receiver<UdpInputPacket> ph) {
+    public void register(InetAddress dstAddress, int dstPort, Receiver<UdpInputPacket> ph) {
         tupleMap.add(null, dstAddress, 0, dstPort, ph);
     }
     

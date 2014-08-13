@@ -12,6 +12,7 @@ import code.messy.net.ethernet.Ethertype;
 import code.messy.net.ip.IpInputPacket;
 import code.messy.net.ip.IpMapper;
 import code.messy.net.ip.NetworkNumber;
+import code.messy.net.ip.IpInputPacket.Protocol;
 import code.messy.net.ip.dhcp.DhcpProcessor;
 import code.messy.net.ip.icmp.IcmpHandler;
 import code.messy.net.ip.rip2.RipProcessor;
@@ -34,15 +35,13 @@ public class RipRouter {
         DhcpProcessor dhcp = new DhcpProcessor();
         
         UdpMapper udp = new UdpMapper();
-        udp.add(IpAddressHelper.BROADCAST_ADDRESS, 67, dhcp);
+        udp.register(IpAddressHelper.BROADCAST_ADDRESS, 67, dhcp);
 
         IpMapper ipCommonMapper = new IpMapper();
         ipCommonMapper.register(IpInputPacket.Protocol.UDP, udp);
         ipCommonMapper.register(route);
 
         IcmpHandler icmp = new IcmpHandler();
-        IpMapper ipLocalMapper = new IpMapper();
-        ipLocalMapper.register(IpInputPacket.Protocol.ICMP, icmp);
 
         RipProcessor rip = new RipProcessor(udp);
         
@@ -55,12 +54,13 @@ public class RipRouter {
             NetworkNumber network = new NetworkNumber(ip, prefix);
             
             EthernetIpPort ethip = new EthernetIpPort(eths[i]);
-            LocalSubnet subnet = LocalSubnet.create(network, ip, ethip, ipLocalMapper);
+            LocalSubnet subnet = LocalSubnet.create(network, ip, ethip, null);
             
             RoutingTable.getInstance().add(subnet);
             rip.addStaticRoute(subnet);
             
             dhcp.register(subnet);
+            ipCommonMapper.register(ip, Protocol.ICMP, icmp);
             
             ethip.register(ipCommonMapper);
             RoutingTable.getInstance().add(subnet);

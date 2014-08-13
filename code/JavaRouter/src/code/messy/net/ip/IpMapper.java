@@ -19,14 +19,13 @@ import code.messy.util.IpAddressHelper;
 public class IpMapper implements Registrable<IpInputPacket.Protocol, Receiver<IpInputPacket>>, Receiver<IpInputPacket> {
     Receiver<IpInputPacket> defaultReceiver = null;
     
-    HashMap<Byte, NetworkMap<Receiver<IpInputPacket>>> protocolMap = new HashMap<>();
+    HashMap<Protocol, NetworkMap<Receiver<IpInputPacket>>> protocolMap = new HashMap<>();
     
     NetworkMap<Receiver<IpInputPacket>> networkMap = new NetworkMap<>();
 
     @Override
     public void receive(IpInputPacket ip) {
-        Byte protocol = ip.getProtocol();
-        NetworkMap<Receiver<IpInputPacket>> networkMap = protocolMap.get(protocol);
+        NetworkMap<Receiver<IpInputPacket>> networkMap = protocolMap.get(ip.getProtocol());
 		if (networkMap != null) {
 	        Receiver<IpInputPacket> ph = networkMap.getByMasking(ip.getDestinationAddress());
 	        if (ph != null) {
@@ -43,7 +42,7 @@ public class IpMapper implements Registrable<IpInputPacket.Protocol, Receiver<Ip
 		NetworkMap<Receiver<IpInputPacket>> networkMap = protocolMap.get(type);
 		if (networkMap == null) {
 			networkMap = new NetworkMap<>();
-			protocolMap.put(type.getValue(), networkMap);
+			protocolMap.put(type, networkMap);
 		}
 		networkMap.put(dst, handler);
 	}
@@ -52,7 +51,7 @@ public class IpMapper implements Registrable<IpInputPacket.Protocol, Receiver<Ip
 		NetworkMap<Receiver<IpInputPacket>> networkMap = protocolMap.get(type);
 		if (networkMap == null) {
 			networkMap = new NetworkMap<>();
-			protocolMap.put(type.getValue(), networkMap);
+			protocolMap.put(type, networkMap);
 		}
 		networkMap.put(network, handler);
 	}

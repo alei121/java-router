@@ -89,11 +89,11 @@ public class RipProcessor {
     InetAddress multicastAddress;
     RipTable ripTable = new RipTable();
 
-    public RipProcessor(UdpMapper handler) {
+    public RipProcessor(UdpMapper udp) {
         try {
             RipHandler riph = new RipHandler(this);
             multicastAddress = InetAddress.getByName("224.0.0.9");
-            handler.add(multicastAddress, 520, riph);
+            udp.register(multicastAddress, 520, riph);
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -7,6 +7,8 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import code.messy.net.InputPacket;
 import code.messy.net.Port;
@@ -23,7 +25,7 @@ public class IpInputPacket implements InputPacket {
     private int dataOffset;
     private int dataLength;
     private int totalLength;
-    private byte protocol;
+    private Protocol protocol;
     
 
     public IpInputPacket(InputPacket packet, IpPort ipSupport) {
@@ -49,7 +51,7 @@ public class IpInputPacket implements InputPacket {
         totalLength = bb.getShort(headerOffset + 2);
         dataLength = totalLength - headerLength;
 
-        protocol = bb.get(headerOffset + 9);
+        protocol = Protocol.getProtocol(bb.get(headerOffset + 9));
 
         byte[] srcIp = new byte[4];
         byte[] dstIp = new byte[4];
@@ -87,11 +89,8 @@ public class IpInputPacket implements InputPacket {
     public InputPacket getPacket() {
         return packet;
     }
-    public byte getProtocol() {
+    public Protocol getProtocol() {
         return protocol;
-    }
-    public void setProtocol(byte protocol) {
-        this.protocol = protocol;
     }
     
     public static short getChecksum(ByteBuffer bb, int offset, int length) {
@@ -112,11 +111,19 @@ public class IpInputPacket implements InputPacket {
     }
 
     public enum Protocol {
+    	UNKNOWN ((byte)-1),
         ICMP ((byte)1),
         TCP ((byte)6),
         UDP ((byte)17);
         
         private byte value;
+        
+        private static Map<Byte, Protocol> mapOfValueToProtocol = new HashMap<Byte, IpInputPacket.Protocol>();
+        static {
+        	for (Protocol protocol : Protocol.values()) {
+        		mapOfValueToProtocol.put(protocol.getValue(), protocol);
+        	}
+        }
         
         Protocol(byte value) {
             this.value = value;
@@ -124,6 +131,12 @@ public class IpInputPacket implements InputPacket {
         
         public byte getValue() {
             return value;
+        }
+        
+        public static Protocol getProtocol(Byte b) {
+        	Protocol protocol = mapOfValueToProtocol.get(b);
+        	if (protocol != null) return protocol;
+        	return UNKNOWN;
         }
     }
 

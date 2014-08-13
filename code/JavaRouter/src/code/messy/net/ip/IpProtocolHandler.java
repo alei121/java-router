@@ -4,19 +4,19 @@
 package code.messy.net.ip;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import code.messy.Receiver;
 import code.messy.Registrable;
 import code.messy.net.ip.IpInputPacket.Protocol;
 
 public class IpProtocolHandler implements Registrable<IpInputPacket.Protocol, Receiver<IpInputPacket>>, Receiver<IpInputPacket> {
-    HashMap<Byte, Receiver<IpInputPacket>> map = new HashMap<Byte, Receiver<IpInputPacket>>();
+    Map<Protocol, Receiver<IpInputPacket>> map = new HashMap<>();
     Receiver<IpInputPacket> defaultReceiver = null;
 
     @Override
     public void receive(IpInputPacket packet) {
-        Byte protocol = packet.getProtocol();
-        Receiver<IpInputPacket> ph = map.get(protocol);
+        Receiver<IpInputPacket> ph = map.get(packet.getProtocol());
         if (ph != null) {
             ph.receive(packet);
         }
@@ -27,7 +27,7 @@ public class IpProtocolHandler implements Registrable<IpInputPacket.Protocol, Re
 
 	@Override
 	public void register(Protocol type, Receiver<IpInputPacket> handler) {
-        map.put(type.getValue(), handler);
+        map.put(type, handler);
 	}
 
 	@Override

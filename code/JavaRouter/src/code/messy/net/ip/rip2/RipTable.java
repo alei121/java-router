@@ -7,7 +7,7 @@ import java.net.InetAddress;
 import java.util.Collection;
 import java.util.HashMap;
 
-import code.messy.net.Port;
+import code.messy.net.ip.IpPort;
 import code.messy.net.ip.NetworkNumber;
 import code.messy.net.ip.route.RemoteSubnet;
 import code.messy.net.ip.route.RoutingTable;
@@ -17,7 +17,7 @@ public class RipTable {
     HashMap<NetworkNumber, RipEntry> map = new HashMap<NetworkNumber, RipEntry>();
 
     public void add(NetworkNumber network, InetAddress nexthop, int metric,
-            Port port) {
+            IpPort port) {
         // TODO consult RFC for different rules
 
         if (nexthop == null) {

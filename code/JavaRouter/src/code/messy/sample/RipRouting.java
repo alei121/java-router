@@ -6,7 +6,7 @@ package code.messy.sample;
 import java.net.InetAddress;
 
 import code.messy.net.ethernet.ArpHandler;
-import code.messy.net.ethernet.EthernetIpSupport;
+import code.messy.net.ethernet.EthernetIpPort;
 import code.messy.net.ethernet.EthernetPort;
 import code.messy.net.ethernet.Ethertype;
 import code.messy.net.ip.IpMapper;
@@ -52,7 +52,7 @@ public class RipRouting {
             short prefix = Short.parseShort(args[i * 3 + 2]);
             NetworkNumber network = new NetworkNumber(ip, prefix);
             
-            EthernetIpSupport ethip = new EthernetIpSupport(eths[i]);
+            EthernetIpPort ethip = new EthernetIpPort(eths[i]);
             LocalSubnet subnet = LocalSubnet.create(network, ip, ethip, ipLocalMapper);
             
             RoutingTable.getInstance().add(subnet);

@@ -5,7 +5,7 @@ package code.messy.net.ip.rip2;
 
 import java.net.InetAddress;
 
-import code.messy.net.Port;
+import code.messy.net.ip.IpPort;
 import code.messy.net.ip.NetworkNumber;
 import code.messy.net.ip.route.RemoteSubnet;
 
@@ -17,7 +17,7 @@ public class RipEntry {
     int metric;
     long timestamp;
     boolean isActive;
-    Port learnedPort;
+    IpPort learnedPort;
 
     RemoteSubnet remoteSubnet;
 
@@ -30,7 +30,7 @@ public class RipEntry {
     }
 
     public RipEntry(NetworkNumber network, InetAddress nextHop, int metric,
-            Port learnedPort) {
+            IpPort learnedPort) {
         this.network = network;
         this.nextHop = nextHop;
         this.metric = metric;
@@ -66,7 +66,7 @@ public class RipEntry {
         return nextHop;
     }
 
-    public Port getPort() {
+    public IpPort getIpPort() {
         return learnedPort;
     }
     

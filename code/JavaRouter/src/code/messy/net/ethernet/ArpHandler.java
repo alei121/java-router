@@ -82,7 +82,7 @@ public class ArpHandler implements Receiver<EthernetInputPacket> {
                 EthernetPort port = (EthernetPort) packet.getPort();
 
                 LocalSubnet subnet = LocalSubnet.getSubnet(targetAddress);
-                if (subnet != null && port == subnet.getLink().getPort()) {
+                if (subnet != null && port == subnet.getIpPort().getPort()) {
                     Flow.trace("ArpHandler: Reply. ip=" + targetAddress
                             + " mac=" + port.getMac());
 

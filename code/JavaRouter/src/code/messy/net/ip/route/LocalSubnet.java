@@ -13,7 +13,7 @@ import java.util.List;
 import code.messy.Receiver;
 import code.messy.net.InputPacket;
 import code.messy.net.Payload;
-import code.messy.net.ip.IpLinkSupport;
+import code.messy.net.ip.IpPort;
 import code.messy.net.ip.IpInputPacket;
 import code.messy.net.ip.NetworkNumber;
 import code.messy.util.Flow;
@@ -24,30 +24,30 @@ public class LocalSubnet implements Subnet {
     
     NetworkNumber network;
     InetAddress src;
-    IpLinkSupport link;
+    IpPort ipPort;
     Receiver<IpInputPacket> localHandler = null;
     List<RemoteSubnet> remotes = new ArrayList<RemoteSubnet>();
     
     // TODO Use loopback() on port instead of localHandler
     // TODO Not sure why protected
     protected LocalSubnet(NetworkNumber network, InetAddress src,
-            IpLinkSupport link, Receiver<IpInputPacket> localHandler) {
+            IpPort ipPort, Receiver<IpInputPacket> localHandler) {
         this.network = network;
         this.src = src;
-        this.link = link;
+        this.ipPort = ipPort;
         this.localHandler = localHandler;
     }
 
     static public LocalSubnet create(NetworkNumber network, InetAddress src,
-            IpLinkSupport link, Receiver<IpInputPacket> localHandler) {
-        LocalSubnet subnet = new LocalSubnet(network, src, link, localHandler);
+            IpPort ipPort, Receiver<IpInputPacket> localHandler) {
+        LocalSubnet subnet = new LocalSubnet(network, src, ipPort, localHandler);
         directs.add(subnet);
         addressSubnetMap.put(src, subnet);
         return subnet;
     }
     
-    static public LocalSubnet create(InetAddress src, int prefix, IpLinkSupport link) {
-    	LocalSubnet subnet = new LocalSubnet(new NetworkNumber(src, prefix), src, link, null);
+    static public LocalSubnet create(InetAddress src, int prefix, IpPort ipPort) {
+    	LocalSubnet subnet = new LocalSubnet(new NetworkNumber(src, prefix), src, ipPort, null);
     	directs.add(subnet);
         addressSubnetMap.put(src, subnet);
     	return subnet;
@@ -73,7 +73,7 @@ public class LocalSubnet implements Subnet {
 
             ByteBuffer bbs[] = new ByteBuffer[1];
             bbs[0] = packet.getByteBuffer();
-            link.send(src, dst, ip);
+            ipPort.send(src, dst, ip);
         }
     }
 
@@ -85,7 +85,7 @@ public class LocalSubnet implements Subnet {
     @Override
     public void send(InetAddress dst, Payload payload) throws IOException {
         Flow.trace("LocalSubnet: send dst=" + dst);
-        link.send(src, dst, payload);
+        ipPort.send(src, dst, payload);
     }
 
     protected void add(RemoteSubnet remote) {
@@ -111,10 +111,10 @@ public class LocalSubnet implements Subnet {
 
     @Override
     public String toString() {
-    	return "LocalSubnet(network=" + network + ", src="+ src + ", link=" + link + ")";
+    	return "LocalSubnet(network=" + network + ", src="+ src + ", link=" + ipPort + ")";
     }
 
-    public IpLinkSupport getLink() {
-        return link;
+    public IpPort getIpPort() {
+        return ipPort;
     }
 }

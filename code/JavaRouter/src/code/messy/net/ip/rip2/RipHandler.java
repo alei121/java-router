@@ -79,7 +79,7 @@ public class RipHandler implements Receiver<UdpInputPacket> {
                     // See if update needs to be skipped
                     if (metric >= 16) continue;
                     
-                    ripProcessor.getRipTable().add(network, nexthop, metric + 1, udp.getPort());
+                    ripProcessor.getRipTable().add(network, nexthop, metric + 1, udp.getIp().getIpPort());
                 }
             }
 

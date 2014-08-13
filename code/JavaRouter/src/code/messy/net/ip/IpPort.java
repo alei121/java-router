@@ -10,7 +10,7 @@ import code.messy.Receiver;
 import code.messy.net.Payload;
 import code.messy.net.Port;
 
-public interface IpLinkSupport {
+public interface IpPort {
 	public void send(InetAddress src, InetAddress dst, Payload payload) throws IOException;
 
     public Port getPort();

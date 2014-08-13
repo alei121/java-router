@@ -19,7 +19,7 @@ public class RipResponse implements OutputPacket {
         Collection<RipEntry> entries = ripTable.getRipEntries();
         for (RipEntry ripEntry : entries) {
             // Don't send back to where it is learned
-            if (direct.getLink() != ripEntry.getPort()) {
+            if (!direct.getIpPort().equals(ripEntry.getIpPort())) {
                 // IP
                 payload.putShort((short) 2);
                 // tag 0

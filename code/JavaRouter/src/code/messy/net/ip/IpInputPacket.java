@@ -13,7 +13,7 @@ import code.messy.net.Port;
 
 public class IpInputPacket implements InputPacket {
     private InputPacket packet;
-    private IpLinkSupport ipSupport;
+    private IpPort ipSupport;
 
     private InetAddress sourceAddress;
     private InetAddress destinationAddress;
@@ -26,7 +26,7 @@ public class IpInputPacket implements InputPacket {
     private byte protocol;
     
 
-    public IpInputPacket(InputPacket packet, IpLinkSupport ipSupport) {
+    public IpInputPacket(InputPacket packet, IpPort ipSupport) {
         this.packet = packet;
         this.ipSupport = ipSupport;
         
@@ -157,7 +157,7 @@ public class IpInputPacket implements InputPacket {
         return packet.getTimestamp();
     }
 
-    public IpLinkSupport getIpSupport() {
+    public IpPort getIpPort() {
 		return ipSupport;
 	}
     

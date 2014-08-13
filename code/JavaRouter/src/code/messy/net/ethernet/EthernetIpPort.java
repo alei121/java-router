@@ -5,15 +5,15 @@ import java.net.InetAddress;
 
 import code.messy.Receiver;
 import code.messy.net.Payload;
-import code.messy.net.ip.IpLinkSupport;
+import code.messy.net.ip.IpPort;
 import code.messy.net.ip.IpInputPacket;
 import code.messy.util.Flow;
 import code.messy.util.IpAddressHelper;
 
-public class EthernetIpSupport implements IpLinkSupport {
+public class EthernetIpPort implements IpPort {
     EthernetPort port;
 
-    public EthernetIpSupport(EthernetPort port) throws IOException {
+    public EthernetIpPort(EthernetPort port) throws IOException {
     	this.port = port;
     }
     
@@ -63,7 +63,7 @@ public class EthernetIpSupport implements IpLinkSupport {
     	
 		@Override
 		public void receive(EthernetInputPacket packet) {
-			IpInputPacket ip = new IpInputPacket(packet, EthernetIpSupport.this);
+			IpInputPacket ip = new IpInputPacket(packet, EthernetIpPort.this);
 			Flow.trace("EthernetIpSupport.receive: src="
 					+ ip.getSourceAddress() + " dst="
 					+ ip.getDestinationAddress());

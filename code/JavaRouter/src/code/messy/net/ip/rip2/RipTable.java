@@ -9,6 +9,7 @@ import java.util.HashMap;
 
 import code.messy.net.Port;
 import code.messy.net.ip.NetworkNumber;
+import code.messy.net.ip.route.RemoteSubnet;
 import code.messy.net.ip.route.RoutingTable;
 import code.messy.util.Flow;
 
@@ -46,7 +47,9 @@ public class RipTable {
     }
 
     private void addToRoutingTable(RipEntry entry) {
-        if (RoutingTable.getInstance().add(entry.getRemoteSubnet())) {
+    	RemoteSubnet subnet = entry.getRemoteSubnet();
+        if (!RoutingTable.getInstance().contains(subnet)) {
+        	RoutingTable.getInstance().add(subnet);
             entry.setActive(true);
             Flow.trace("RipTable: Added entry " + entry);
         } else {

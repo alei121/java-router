@@ -3,18 +3,25 @@ package code.messy.util;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import code.messy.net.ip.NetworkNumber;
+
 public class IpAddressHelper {
 	public static InetAddress BROADCAST_ADDRESS = null;
+	public static InetAddress ANY_ADDRESS = null;
+	public static NetworkNumber ANY_NETWORK = null;
 	
 	static {
 		byte[] addr = new byte[4];
-		addr[0] = addr[1] = addr[2] = addr[3] = (byte)0xFF;
 		try {
+			addr[0] = addr[1] = addr[2] = addr[3] = (byte)0xFF;
 			BROADCAST_ADDRESS = InetAddress.getByAddress(addr);
+			addr[0] = addr[1] = addr[2] = addr[3] = (byte)0x00;
+			ANY_ADDRESS = InetAddress.getByAddress(addr);
 		} catch (UnknownHostException e) {
 			// Should not happen because there is no lookup
 			throw new AssertionError("Cannot get broadcast address", e);
 		}
+		ANY_NETWORK = new NetworkNumber(ANY_ADDRESS, 0);
 	}
 	
 	public static int getInt(InetAddress address) {

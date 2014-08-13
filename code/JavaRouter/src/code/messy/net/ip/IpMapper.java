@@ -9,19 +9,26 @@ import java.util.HashMap;
 import code.messy.Receiver;
 import code.messy.Registrable;
 import code.messy.net.ip.IpInputPacket.Protocol;
+import code.messy.util.IpAddressHelper;
 
+/**
+ * Matching destination
+ * 
+ * @author alei
+ */
 public class IpMapper implements Registrable<IpInputPacket.Protocol, Receiver<IpInputPacket>>, Receiver<IpInputPacket> {
     Receiver<IpInputPacket> defaultReceiver = null;
     
-    HashMap<Byte, TupleMap<Receiver<IpInputPacket>>> protocolMap = new HashMap<>();
+    HashMap<Byte, NetworkMap<Receiver<IpInputPacket>>> protocolMap = new HashMap<>();
+    
+    NetworkMap<Receiver<IpInputPacket>> networkMap = new NetworkMap<>();
 
     @Override
     public void receive(IpInputPacket ip) {
         Byte protocol = ip.getProtocol();
-		TupleMap<Receiver<IpInputPacket>> tupleMap = protocolMap.get(protocol);
-		if (tupleMap != null) {
-	        Receiver<IpInputPacket> ph = tupleMap.get(ip.getSourceAddress(), ip
-	                .getDestinationAddress(), 0, 0);
+        NetworkMap<Receiver<IpInputPacket>> networkMap = protocolMap.get(protocol);
+		if (networkMap != null) {
+	        Receiver<IpInputPacket> ph = networkMap.getByMasking(ip.getDestinationAddress());
 	        if (ph != null) {
 	        	ph.receive(ip);
 	        	return;
@@ -33,17 +40,26 @@ public class IpMapper implements Registrable<IpInputPacket.Protocol, Receiver<Ip
     }
 
 	public void register(InetAddress dst, Protocol type, Receiver<IpInputPacket> handler) {
-		TupleMap<Receiver<IpInputPacket>> tupleMap = protocolMap.get(type);
-		if (tupleMap == null) {
-			tupleMap = new TupleMap<>();
-			protocolMap.put(type.getValue(), tupleMap);
+		NetworkMap<Receiver<IpInputPacket>> networkMap = protocolMap.get(type);
+		if (networkMap == null) {
+			networkMap = new NetworkMap<>();
+			protocolMap.put(type.getValue(), networkMap);
 		}
-		tupleMap.add(null, dst, 0, 0, handler);
+		networkMap.put(dst, handler);
+	}
+	
+	public void register(NetworkNumber network, Protocol type, Receiver<IpInputPacket> handler) {
+		NetworkMap<Receiver<IpInputPacket>> networkMap = protocolMap.get(type);
+		if (networkMap == null) {
+			networkMap = new NetworkMap<>();
+			protocolMap.put(type.getValue(), networkMap);
+		}
+		networkMap.put(network, handler);
 	}
 	
 	@Override
 	public void register(Protocol type, Receiver<IpInputPacket> handler) {
-		register(null, type, handler);
+		register(IpAddressHelper.ANY_NETWORK, type, handler);
 	}
 
 	@Override

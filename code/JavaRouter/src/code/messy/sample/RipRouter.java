@@ -9,10 +9,10 @@ import code.messy.net.ethernet.ArpHandler;
 import code.messy.net.ethernet.EthernetIpPort;
 import code.messy.net.ethernet.EthernetPort;
 import code.messy.net.ethernet.Ethertype;
-import code.messy.net.ip.IpMapper;
 import code.messy.net.ip.IpInputPacket;
+import code.messy.net.ip.IpMapper;
 import code.messy.net.ip.NetworkNumber;
-import code.messy.net.ip.dhcp.DhcpHandler;
+import code.messy.net.ip.dhcp.DhcpProcessor;
 import code.messy.net.ip.icmp.IcmpHandler;
 import code.messy.net.ip.rip2.RipProcessor;
 import code.messy.net.ip.route.LocalSubnet;
@@ -21,18 +21,20 @@ import code.messy.net.ip.route.RoutingTable;
 import code.messy.net.ip.udp.UdpMapper;
 import code.messy.util.IpAddressHelper;
 
-public class RipRouting {
-    /**
-     * Syntax: <portname> <ip> <prefix>
-     * e.g: java RipRouting eth1 10.0.0.2 24 eth2 11.0.0.2 24
+public class RipRouter {
+    /*
+     * Syntax: [<portname> <ip> <prefix>]...
+     * e.g: java RipRouter eth1 10.0.0.2 24 eth2 11.0.0.2 24
      * 
      * This would be pure static routing if RipProcessor is removed.
      * 
      */
     public static void main(String[] args) throws Exception {
         RouteHandler route = new RouteHandler();
+        DhcpProcessor dhcp = new DhcpProcessor();
         
         UdpMapper udp = new UdpMapper();
+        udp.add(IpAddressHelper.BROADCAST_ADDRESS, 67, dhcp);
 
         IpMapper ipCommonMapper = new IpMapper();
         ipCommonMapper.register(IpInputPacket.Protocol.UDP, udp);
@@ -58,15 +60,9 @@ public class RipRouting {
             RoutingTable.getInstance().add(subnet);
             rip.addStaticRoute(subnet);
             
-            UdpMapper udpForBroadcast = new UdpMapper();
-            DhcpHandler dhcp = new DhcpHandler(subnet);
-            udpForBroadcast.add(IpAddressHelper.BROADCAST_ADDRESS, 67, dhcp);
-            udp.add(ip, 67, dhcp);
-            IpMapper ipBroadcastMapper = new IpMapper();
-            ipBroadcastMapper.register(IpAddressHelper.BROADCAST_ADDRESS, IpInputPacket.Protocol.UDP, udpForBroadcast);
-            ipBroadcastMapper.register(ipCommonMapper);
+            dhcp.register(subnet);
             
-            ethip.register(ipBroadcastMapper);
+            ethip.register(ipCommonMapper);
             RoutingTable.getInstance().add(subnet);
 
             eths[i].register(Ethertype.ARP, new ArpHandler());

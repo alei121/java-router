@@ -40,7 +40,7 @@ public class IcmpHandler implements Receiver<IpInputPacket> {
             InetAddress dst = ip.getSourceAddress();
             Subnet subnet = RoutingTable.getInstance().getSubnetByMasking(dst);
             
-            IpOutputPacket output = new IpOutputPacket(subnet.getSrcAddress(),
+            IpOutputPacket output = new IpOutputPacket(subnet.getIpAddress(),
                     dst, Protocol.ICMP, icmp);
             subnet.send(dst, output);
         } catch (IOException e) {

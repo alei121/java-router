@@ -12,7 +12,7 @@ import code.messy.net.ip.NetworkNumber;
 
 public interface Subnet {
     public NetworkNumber getNetwork();
-    public InetAddress getSrcAddress();
+    public InetAddress getIpAddress();
     public void forward(IpInputPacket ip) throws IOException;
     public void send(InetAddress dst, Payload payload) throws IOException;
 }

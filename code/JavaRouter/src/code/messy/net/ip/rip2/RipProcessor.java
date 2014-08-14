@@ -138,7 +138,7 @@ public class RipProcessor {
                 
                 RipResponse message = new RipResponse(ripTable, direct);
     			UdpOutputPacket udp = new UdpOutputPacket(520, 520, message);
-    			IpOutputPacket ip = new IpOutputPacket(direct.getSrcAddress(), multicastAddress, Protocol.UDP, 1, udp);
+    			IpOutputPacket ip = new IpOutputPacket(direct.getIpAddress(), multicastAddress, Protocol.UDP, 1, udp);
     			direct.send(multicastAddress, ip);
             } catch (IOException e) {
                 e.printStackTrace();

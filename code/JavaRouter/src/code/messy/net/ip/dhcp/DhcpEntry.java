@@ -35,7 +35,7 @@ public class DhcpEntry {
 	
 	protected DhcpEntry(LocalSubnet subnet) {
 		this.network = subnet.getNetwork();
-		this.gateway = subnet.getSrcAddress();
+		this.gateway = subnet.getIpAddress();
 		// TODO need to be configurable and able to release and timeout
 		this.nextIP = IpAddressHelper.getInt(gateway) + 1;
 	}

@@ -9,7 +9,9 @@ import code.messy.net.ip.IpPort;
 import code.messy.net.ip.dhcp.option.DHCPMessageType;
 import code.messy.net.ip.route.LocalSubnet;
 import code.messy.net.ip.udp.UdpInputPacket;
+import code.messy.net.ip.udp.UdpMapper;
 import code.messy.util.Flow;
+import code.messy.util.IpAddressHelper;
 
 /*
  * Simplified DHCP processing. Only handles discover and request
@@ -18,6 +20,10 @@ import code.messy.util.Flow;
 public class DhcpProcessor implements Receiver<UdpInputPacket> {
 	private Map<IpPort, DhcpEntry> mapOfIpPortToEntry = new HashMap<>();
 
+	public DhcpProcessor(UdpMapper udp) {
+		udp.register(IpAddressHelper.BROADCAST_ADDRESS, 67, this);
+	}
+	
 	public void register(LocalSubnet subnet) {
 		DhcpEntry entry = new DhcpEntry(subnet);
 		mapOfIpPortToEntry.put(subnet.getIpPort(), entry);

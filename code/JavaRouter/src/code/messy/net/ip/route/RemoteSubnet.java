@@ -21,7 +21,6 @@ public class RemoteSubnet implements Subnet {
         this.nextHop = nextHop;
         direct = (LocalSubnet) RoutingTable.getInstance()
                 .getSubnetByMasking(nextHop);
-        direct.add(this);
     }
 
     @Override
@@ -36,8 +35,8 @@ public class RemoteSubnet implements Subnet {
     }
 
     @Override
-    public InetAddress getSrcAddress() {
-        return direct.getSrcAddress();
+    public InetAddress getIpAddress() {
+        return direct.getIpAddress();
     }
 
     @Override

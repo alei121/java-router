@@ -10,7 +10,6 @@ import code.messy.net.ethernet.EthernetIpPort;
 import code.messy.net.ethernet.EthernetPort;
 import code.messy.net.ethernet.Ethertype;
 import code.messy.net.ip.IpMapper;
-import code.messy.net.ip.NetworkNumber;
 import code.messy.net.ip.Protocol;
 import code.messy.net.ip.dhcp.DhcpProcessor;
 import code.messy.net.ip.icmp.IcmpHandler;
@@ -19,7 +18,6 @@ import code.messy.net.ip.route.LocalSubnet;
 import code.messy.net.ip.route.RouteHandler;
 import code.messy.net.ip.route.RoutingTable;
 import code.messy.net.ip.udp.UdpMapper;
-import code.messy.util.IpAddressHelper;
 
 public class RipRouter {
     /*
@@ -30,38 +28,40 @@ public class RipRouter {
      * 
      */
     public static void main(String[] args) throws Exception {
+    	int portCount = args.length / 3;
+    	
         RouteHandler route = new RouteHandler();
-        DhcpProcessor dhcp = new DhcpProcessor();
-        
-        UdpMapper udp = new UdpMapper();
-        udp.register(IpAddressHelper.BROADCAST_ADDRESS, 67, dhcp);
 
-        IpMapper ipCommonMapper = new IpMapper();
-        ipCommonMapper.register(Protocol.UDP, udp);
-        ipCommonMapper.register(route);
+        UdpMapper udp = new UdpMapper();
+        udp.registerFallback(route);
+        RipProcessor rip = new RipProcessor(udp);
+        DhcpProcessor dhcp = new DhcpProcessor(udp);
+
+        IpMapper ipMapper = new IpMapper();
+        ipMapper.register(Protocol.UDP, udp);
+        ipMapper.register(route);
 
         IcmpHandler icmp = new IcmpHandler();
-
-        RipProcessor rip = new RipProcessor(udp);
         
-        EthernetPort eths[] = new EthernetPort[2];
+        EthernetPort eths[] = new EthernetPort[portCount];
         
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < portCount; i++) {
         	eths[i] = new EthernetPort(args[i * 3]);
         	InetAddress ip = InetAddress.getByName(args[i * 3 + 1]);
-            short prefix = Short.parseShort(args[i * 3 + 2]);
-            NetworkNumber network = new NetworkNumber(ip, prefix);
-            
+            int prefix = Integer.parseInt(args[i * 3 + 2]);
+
+            ipMapper.register(ip, Protocol.ICMP, icmp);
+
             EthernetIpPort ethip = new EthernetIpPort(eths[i]);
-            LocalSubnet subnet = LocalSubnet.create(network, ip, ethip, null);
+            ethip.register(ipMapper);
+
+            LocalSubnet subnet = new LocalSubnet(ip, prefix, ethip);
             
             RoutingTable.getInstance().add(subnet);
             rip.addStaticRoute(subnet);
             
             dhcp.register(subnet);
-            ipCommonMapper.register(ip, Protocol.ICMP, icmp);
             
-            ethip.register(ipCommonMapper);
             RoutingTable.getInstance().add(subnet);
 
             eths[i].register(Ethertype.ARP, new ArpHandler());
@@ -69,11 +69,11 @@ public class RipRouter {
         
         rip.start();
 
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < portCount; i++) {
         	eths[i].start();
         }
         
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < portCount; i++) {
         	eths[i].join();
         }
         rip.stop();

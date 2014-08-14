@@ -74,7 +74,7 @@ public class LocalSubnet implements Subnet {
 
     @Override
     public String toString() {
-    	return "LocalSubnet(network=" + network + ", src="+ address + ", link=" + ipPort + ")";
+    	return "LocalSubnet(network=" + network + ", src="+ address + ", ipPort=" + ipPort + ")";
     }
 
     public IpPort getIpPort() {

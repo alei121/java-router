@@ -40,8 +40,9 @@ public class BridgeWithFilter {
     	Printer printer = new Printer();
     	
         List<EthernetPort> ports = new ArrayList<>();
-        ports.add(new EthernetPort(args[0]));
-        ports.add(new EthernetPort(args[1]));
+        for (String name : args) {
+            ports.add(new EthernetPort(name));
+		}
     	Bridge bridge = new Bridge("MyBridge", ports);
 
     	Filter<EthernetInputPacket> filter = new Filter<>(matcher, printer, bridge);

@@ -18,8 +18,9 @@ public class LearningBridge {
      */
     public static void main(String[] args) throws Exception {
         List<EthernetPort> ports = new ArrayList<>();
-        ports.add(new EthernetPort(args[0]));
-        ports.add(new EthernetPort(args[1]));
+        for (String name : args) {
+            ports.add(new EthernetPort(name));
+		}
     	Bridge bridge = new Bridge("MyBridge", ports);
 
         for (EthernetPort port : ports) {
